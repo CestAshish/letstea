@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant</title>
+    <style>
+                body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(33, 33, 33);
+            color: rgb(255, 255, 255);
+        }
+
+        .body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 2.5%;
+        }
+
+        #chat-window {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            width: 70%;
+            margin: auto; /* Center the chat window */
+        }
+
+
+
+       #message-list {
+    background-color: rgb(33, 33, 33);
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Added gap for spacing */
+    scrollbar-width: none; /* For Firefox */
+}
+
+/* Hide scrollbar for Webkit browsers */
+#message-list::-webkit-scrollbar {
+    display: none;
+}
+
+
+        .message {
+            max-width: 200px;
+            background-color: rgb(47,47,47);
+            color: rgb(0, 0, 0);
+            padding: 0.5rem;
+            border-radius: 4px;
+            align-self: flex-end; /* Align user message to the right */
+            margin-left: auto; /* Push user message to the right */
+        }
+
+        .bot-message {
+            max-width: 200px; /* Optional: Same max width for consistency */
+            background-color: rgb(33, 33, 33);
+            color: rgb(255, 255, 255);
+            padding: 0.5rem;
+            border-radius: 4px;
+            align-self: flex-start; /* Align bot message to the left */
+            margin-right: auto; /* Push bot message to the left */
+        }
+
+        .loading-animation {
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .loading-dots {
+            display: flex;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            margin: 0 3px;
+            border-radius: 50%;
+            background-color: rgb(255, 255, 255);
+            animation: loading 1s infinite;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(1);
+            }
+            40% {
+                transform: scale(1.5);
+            }
+        }
+
+        .footer {
+            height: 5%;
+            display: flex;
+            margin: 2.5%;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: rgb(33, 33, 33);
+            width: 80%; /* Set width of the footer input area to 80% */
+            margin: auto; /* Center the footer */
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center; /* Center the input and button */
+            width:100%;
+        }
+
+        .input-group input {
+            background-color: rgb(47,47,47);
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 30px; /* Maintain rounded edges */
+            width: 100%; /* Set a fixed width for the input field */
+            margin-right: 0.5rem; /* Space between input and button */
+        }
+
+        .input-group button {
+            background-color: rgb(47,47,47);
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative; /* Required for animation */
+        }
+
+        .input-group button:active {
+            background-color: rgb(200, 200, 200);
+        }
+
+        .input-group button.active {
+            background-color: rgb(100, 255, 100); /* Color when active */
+        }
+ #headtext {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            width: 95%;
+            margin: auto; /* Center the chat window */
+        }
+
+       #message-list-head {
+       border-radius: 8px;
+    background-color: rgb(47,47,47);
+    max-height: 140px;
+    overflow-y: auto;
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Added gap for spacing */
+    scrollbar-width: none; /* For Firefox */
+}
+
+/* Hide scrollbar for Webkit browsers */
+#message-list::-webkit-scrollbar {
+    display: none;
+}
+
+
+        .toast {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+    </style>
+</head>
+<body>
+    <div class="body">
+        <header>
+            <div id="headtext">
+                <div id="message-list-head">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada. Nulla facilisi. Phasellus vehicula justo eget diam posuere sollicitudin. Ut tincidunt, neque ac convallis egestas, enim risus vehicula odio, vel ultricies mi libero quis libero. Maecenas ultricies, justo ac dignissim volutpat, massa felis faucibus quam, eget faucibus libero odio vel purus. Sed consequat, sapien sit amet hendrerit scelerisque, quam nisl vehicula dolor, a elementum eros lacus ac nisl. Duis laoreet metus et libero ultrices, at dictum ex ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In convallis dolor id ligula auctor, id varius magna cursus. Integer non pulvinar risus, vel vulputate nisi. Ut lacinia, arcu non luctus gravida, felis ligula hendrerit dui, a fringilla libero lorem non nulla.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada. Nulla facilisi. Phasellus vehicula justo eget diam posuere sollicitudin. Ut tincidunt, neque ac convallis egestas, enim risus vehicula odio, vel ultricies mi libero quis libero. Maecenas ultricies, justo ac dignissim volutpat, massa felis faucibus quam, eget faucibus libero odio vel purus. Sed consequat, sapien sit amet hendrerit scelerisque, quam nisl vehicula dolor, a elementum eros lacus ac nisl. Duis laoreet metus et libero ultrices, at dictum ex ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In convallis dolor id ligula auctor, id varius magna cursus. Integer non pulvinar risus, vel vulputate nisi. Ut lacinia, arcu non luctus gravida, felis ligula hendrerit dui, a fringilla libero lorem non nulla.
+
+                </div>
+            </div>
+        </header>
+        <div id="chat-window">
+            <div id="message-list">
+                <!-- Messages will be displayed here -->
+            </div>
+            <div class="loading-animation" id="loading-animation" style="display:none;">
+                <div class="loading-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="input-group">
+            <input
+              type="text"
+              id="message-input"
+              placeholder="Type your message here..."
+            />
+            <button id="action-button">🎤</button> <!-- Start with voice button -->
+        </div>
+    </footer>
+
+    <div class="toast" id="toast">Couldn't understand, please try again.</div>
+
+    <script>
+        const actionButton = document.getElementById('action-button');
+        const messageInput = document.getElementById('message-input');
+        const messageList = document.getElementById('message-list');
+        const loadingAnimation = document.getElementById('loading-animation');
+        const toast = document.getElementById('toast');
+        let recognition;
+
+        actionButton.addEventListener('mousedown', function() {
+            startVoiceRecognition(); // Start voice recognition
+            actionButton.innerHTML = "🎤"; // Indicate listening
+        });
+
+        actionButton.addEventListener('mouseup', function() {
+            stopVoiceRecognition(); // Stop recognition and send the message
+            actionButton.innerHTML = "🎤"; // Reset button text
+        });
+
+        actionButton.addEventListener('mouseleave', function() {
+            stopVoiceRecognition(); // Stop recognition if mouse leaves button
+            actionButton.innerHTML = "🎤"; // Reset button text
+        });
+
+        messageInput.addEventListener('input', function() {
+            if (messageInput.value.trim() === "") {
+                actionButton.innerHTML = "🎤"; // Change button to voice icon
+            } else {
+                actionButton.innerHTML = "Send"; // Change button to send
+            }
+        });
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+        }
+
+        function startVoiceRecognition() {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true;
+
+            recognition.onresult = (event) => {
+                const messageText = event.results[0][0].transcript;
+                messageInput.value = messageText; // Set input value to recognized text
+                sendMessage(); // Automatically send the recognized message
+            };
+
+            recognition.onerror = (event) => {
+                showToast("Couldn't understand, please try again."); // Show toast on error
+            };
+
+            recognition.start();
+        }
+
+        function stopVoiceRecognition() {
+            if (recognition) {
+                recognition.stop(); // Stop recognition
+            }
+        }
+
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                // Display user message
+                const userMessageElement = document.createElement('div');
+                userMessageElement.className = 'message';
+                userMessageElement.textContent = messageText;
+                messageList.appendChild(userMessageElement);
+
+                // Clear input and scroll to bottom
+                messageInput.value = '';
+                actionButton.innerHTML = "🎤"; // Reset button to microphone icon
+                messageList.scrollTop = messageList.scrollHeight;
+
+                // Show loading animation for bot response
+                loadingAnimation.style.display = 'flex';
+                setTimeout(() => {
+                    // Hide loading animation after 1 second
+                    loadingAnimation.style.display = 'none';
+
+                    // Display bot message
+                    const botMessageElement = document.createElement('div');
+                    botMessageElement.className = 'bot-message';
+                    botMessageElement.textContent = "I can assist you with that!";
+                    messageList.appendChild(botMessageElement);
+                    messageList.scrollTop = messageList.scrollHeight; // Scroll to bottom
+                }, 1000); // Simulate response time
+            }
+        }
+
+        // Allow sending message with Enter key
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage(); // Send the message when Enter is pressed
+            }
+        });
+    </script>
+</body>
+</html>
