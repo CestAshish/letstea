@@ -5,7 +5,7 @@ from userprofiling import user_profiler,chat_bot
 
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv('GROQ_API_KEY'))
-user_profile = user_profiler()  # Assuming this function returns a user profile dictionary
+user_profile = user_profiler()
 
 # Construct the system prompt
 system_prompt = f'''You are Barbara, a friendly language companion for LETSTEA, 

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Example</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box; /* Ensure padding doesn't affect width/height */
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex; /* Use flexbox for layout */
+            height: 100vh; /* Full height */
+            overflow: hidden; /* Prevent scrolling */
+            background-color: #1d1d1d; /* Darker gray background */
+        }
+
+        .sidebar {
+            width: 250px; /* Width of the sidebar */
+            background-color: #222; /* Darker background for sidebar */
+            position: fixed; /* Fixed position on the left */
+            height: 100%; /* Full height */
+            overflow-y: auto; /* Allow vertical scrolling */
+            border-right: 1px solid #444; /* Darker right border for separation */
+            transition: transform 0.3s ease; /* Smooth transition for collapsing */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
+            display: flex;
+            flex-direction: column; /* Stack content vertically */
+            padding-top: 20px; /* Space at the top */
+        }
+
+        .collapsed {
+            transform: translateX(-100%); /* Move sidebar out of view */
+        }
+
+        .sidebar-content {
+            padding: 15px; /* Padding for content */
+            flex-grow: 1; /* Allow the content to grow */
+        }
+
+        .toggle-btn {
+            max-width: 25%;
+            margin: 10px; /* Space around buttons */
+            border-radius: 5px; /* Rounded button */
+            border: none; /* No border */
+            color: white; /* White text */
+            padding: 10px 15px; /* Padding for buttons */
+            cursor: pointer; /* Pointer cursor */
+            font-size: 16px; /* Font size */
+            transition: background-color 0.3s; /* Smooth transition for hover */
+            flex-shrink: 0; /* Prevent buttons from shrinking */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+            background-color: #1d1d1d; /* Same as body background */
+        }
+
+        .toggle-btn:hover {
+            background-color: #444; /* Darker on hover */
+        }
+
+        h3 {
+            color: #fff; /* White text for headings */
+            text-align: center; /* Center heading */
+            margin-bottom: 15px; /* Space below heading */
+        }
+
+        #topic-list {
+            max-height: calc(100vh - 80px); /* Full height minus button and padding */
+            overflow-y: auto; /* Allow scrolling */
+            display: flex;
+            flex-direction: column; /* Stack topics vertically */
+            margin-top: 15px; /* Add some space above topics */
+        }
+
+        .topic {
+            background-color: #333; /* Dark background for topics */
+            color: white; /* White text */
+            padding: 15px; /* Padding for topics */
+            border-radius: 4px; /* Rounded corners */
+            margin-bottom: 10px; /* Space between topics */
+            transition: background-color 0.3s, transform 0.3s; /* Smooth hover effect */
+            cursor: pointer; /* Show pointer on hover */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+        }
+
+        .topic.selected {
+            background-color: white; /* Highlighted background */
+            color: black; /* Black text */
+        }
+
+        .topic:hover {
+            background-color: #555; /* Darker on hover */
+        }
+
+        /* Hide scrollbar */
+        #topic-list::-webkit-scrollbar {
+            display: none; /* For Chrome/Safari */
+        }
+        #topic-list {
+            scrollbar-width: none; /* For Firefox */
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar" class="sidebar">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div id="sidebar-content" class="sidebar-content">
+            <h3>Topics</h3>
+            <div id="topic-list">
+                <!-- Topics will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-left: 260px; padding: 20px; color: white;">
+        <h2 id="selected-topic-name">Selected Topic: </h2>
+        <p id="selected-topic-desc">Description: </p>
+        <p id="selected-topic-index">Index: </p>
+    </div>
+
+    <script>
+        const level = "B2"; // Change this variable to select different levels
+        const indexToScroll = 59; // Index to highlight and scroll to (1-based)
+        let currentSelectedTopic = null; // Variable to keep track of the currently selected topic
+
+        // Fetch topics from JSON file
+        fetch('static/topics.json')
+            .then(response => response.json())
+            .then(data => {
+                const topics = data["speakers English"][level];
+                populateTopics(topics);
+            })
+            .catch(error => console.error('Error loading JSON:', error));
+
+        function populateTopics(topics) {
+            const topicList = document.getElementById('topic-list');
+            topicList.innerHTML = ''; // Clear existing topics
+
+            Object.keys(topics).forEach(key => {
+                const topicData = topics[key];
+                const topicElement = document.createElement('div');
+                topicElement.className = 'topic';
+                topicElement.textContent = topicData.Topic;
+
+                topicElement.onclick = () => {
+                    selectTopic(topicData.Topic, topicData.desc, key, topicElement); // Pass the element to selectTopic
+                };
+
+                topicList.appendChild(topicElement);
+            });
+
+            // Scroll to and highlight the specified index (1-based)
+            const selectedTopic = topicList.children[indexToScroll - 1];
+            if (selectedTopic) {
+                selectedTopic.classList.add('selected'); // Highlight the selected topic
+                currentSelectedTopic = selectedTopic; // Set the currently selected topic
+                selectedTopic.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Scroll to the selected topic
+                selectTopic(selectedTopic.textContent, topics[indexToScroll].desc, indexToScroll, selectedTopic);
+            }
+        }
+
+        function selectTopic(topicName, topicDesc, index, topicElement) {
+            // Remove 'selected' class from the previous topic if it exists
+            if (currentSelectedTopic) {
+                currentSelectedTopic.classList.remove('selected'); // Revert the previous selection
+            }
+
+            currentSelectedTopic = topicElement; // Update the currently selected topic
+            currentSelectedTopic.classList.add('selected'); // Highlight the newly selected topic
+
+            // Update the displayed information
+            document.getElementById('selected-topic-name').textContent = 'Selected Topic: ' + topicName;
+            document.getElementById('selected-topic-desc').textContent = 'Description: ' + topicDesc;
+            document.getElementById('selected-topic-index').textContent = 'Index: ' + index;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed'); // Toggle the collapsed class
+        }
+    </script>
+
+    <!-- Bootstrap JS and dependencies (optional, for additional features) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

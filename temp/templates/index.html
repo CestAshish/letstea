@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microphone Icons</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <style>
+        .icon-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 2rem;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="icon-container">
+        <!-- FontAwesome Icons -->
+        <i class="fas fa-microphone"> </i>
+        <i class="fas fa-microphone-alt"></i>
+        <i class="fas fa-microphone-slash"></i>
+
+        <!-- Material Icons -->
+        <span class="material-icons">mic</span>
+        <span class="material-icons">mic_none</span>
+        <span class="material-icons">mic_off</span>
+
+        <!-- Feather Icons -->
+        <i data-feather="mic"></i>
+        <i data-feather="mic-off"></i>
+
+        <!-- Bootstrap Icons -->
+        <i class="bi bi-mic"></i>
+        <i class="bi bi-mic-mute"></i>
+    </div>
+
+    <script>
+        // Activate Feather Icons
+        feather.replace();
+    </script>
+</body>
+</html>

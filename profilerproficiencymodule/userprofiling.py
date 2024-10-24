@@ -117,7 +117,7 @@ def user_profiler():
     # Start profiling with initial prompt
     init_prompt = "init prompt"
     response, message_history = chat_bot(init_prompt, message_history)
-    print(response)  # Print initial response for debugging
+    print(response)
     user_data = None
 
     # Collect user input in a loop until we receive a final response

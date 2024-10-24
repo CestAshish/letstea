@@ -1,0 +1,154 @@
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            margin: 0;
+            background-color: rgb(33, 33, 33);
+            color: rgb(255, 255, 255);
+            box-sizing: border-box;
+        }
+
+        .body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+#chat-window {
+            flex-grow: 1; /* Allow it to grow to fill available space */
+            max-height: 80vh; /* Set a max height for the chat window */
+            overflow-y: auto; /* Allow vertical scrolling */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            width: 70%;
+            margin: auto;
+        }
+
+        #message-list {
+            max-height: 100%; /* Use full height of chat-window */
+            background-color: rgb(33, 33, 33);
+            overflow-y: auto; /* Enable scrolling when messages exceed height */
+            flex-grow: 1; /* Allow it to fill available space */
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: none; /* For Firefox */
+        }
+
+        #message-list::-webkit-scrollbar {
+            display: none; /* For Chrome/Safari */
+        }
+
+        .message {
+            max-width: 50%;
+            background-color: rgb(47, 47, 47);
+            color: rgb(255,255,255);
+            padding: 0.5rem;
+            border-radius: 4px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            max-width: 50%;
+            background-color: rgb(33, 33, 33);
+            color: rgb(255, 255, 255);
+            padding: 0.5rem;
+            border-radius: 4px;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+
+        .loading-animation {
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .loading-dots {
+            display: flex;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            margin: 0 3px;
+            border-radius: 50%;
+            background-color: rgb(255, 255, 255);
+            animation: loading 1s infinite;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(1);
+            }
+            40% {
+                transform: scale(1.5);
+            }
+        }
+
+        .input-group {
+            height: 6vh;
+            display: flex;
+            justify-content: center;
+            width: 90%;
+            padding: 0 0 1rem 0;
+            margin: auto;
+        }
+
+        .input-group input {
+            background-color: rgb(47, 47, 47);
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 30px;
+            width: 80%;
+            margin-right: 0.5rem;
+        }
+
+        .input-group button {
+            background-color: rgb(47, 47, 47);
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .input-group button:active {
+            background-color: rgb(200, 200, 200);
+        }
+
+        .input-group button.active {
+            background-color: rgb(100, 255, 100);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }

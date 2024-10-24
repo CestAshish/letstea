@@ -22,37 +22,9 @@
             padding: 0;
         }
 
-        #headtext {
-            max-height: 40vh;
-            flex-grow: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            width: 95%;
-            margin: auto;
-        }
-
-        #message-list-head {
-            border-radius: 8px;
-            background-color: rgb(47, 47, 47);
-            overflow-y: auto;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            scrollbar-width: none;
-        }
-
-        #message-list::-webkit-scrollbar {
-            display: none;
-        }
-
-        #chat-window {
+#chat-window {
             flex-grow: 1; /* Allow it to grow to fill available space */
-            max-height: 40vh; /* Set a max height for the chat window */
+            max-height: 80vh; /* Set a max height for the chat window */
             overflow-y: auto; /* Allow vertical scrolling */
             border-radius: 4px;
             display: flex;
@@ -190,15 +162,7 @@
 </head>
 <body>
     <div class="body">
-        <div id="headtext">
-            <div id="message-list-head">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-            </div>
-        </div>
+
         <div id="chat-window">
             <div id="message-list">
                 <!-- Messages will be displayed here -->
@@ -213,7 +177,7 @@
             placeholder="Type your message here..."
         />
         <button id="action-button">🎤</button>
-        <button id="">next</button>
+
     </div>
 
     <div class="toast" id="toast">Couldn't understand, please try again.</div>
