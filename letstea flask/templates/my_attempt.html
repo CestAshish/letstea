@@ -123,6 +123,26 @@
     </div>
 
     <script>
+        function sendMessageToChatbot(topicName, topicDesc, topicIndex) {
+        // Get the iframe that contains the chatbot
+        const chatbotFrame = parent.document.querySelector('.right iframe');
+
+        // Create a message object
+        const message = {
+            type: 'topicSelected',
+            topicName: topicName,
+            topicDesc: topicDesc,
+            topicIndex: topicIndex
+        };
+
+        // Send the message to the chatbot iframe
+        chatbotFrame.contentWindow.postMessage(message, '*');
+    }
+
+    // Example function that could be called when a topic is selected
+    function selectTopic(topicName, topicDesc, topicIndex) {
+        sendMessageToChatbot(topicName, topicDesc, topicIndex);
+    }
         const level = "B2"; // Change this variable to select different levels
         const indexToScroll = 59; // Index to highlight and scroll to (1-based)
         let currentSelectedTopic = null; // Variable to keep track of the currently selected topic

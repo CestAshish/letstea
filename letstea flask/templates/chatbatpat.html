@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            margin: 0;
+            background-color: rgb(33, 33, 33);
+            color: rgb(255, 255, 255);
+            box-sizing: border-box;
+        }
+
+        .body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        #headtext {
+            max-height: 40vh;
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            width: 95%;
+            margin: auto;
+        }
+
+        #message-list-head {
+            border-radius: 8px;
+            background-color: rgb(47, 47, 47);
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            scrollbar-width: none;
+        }
+
+        #message-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        #chat-window {
+            flex-grow: 1; /* Allow it to grow to fill available space */
+            max-height: 40vh; /* Set a max height for the chat window */
+            overflow-y: auto; /* Allow vertical scrolling */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            width: 70%;
+            margin: auto;
+        }
+
+        #message-list {
+            max-height: 100%; /* Use full height of chat-window */
+            background-color: rgb(33, 33, 33);
+            overflow-y: auto; /* Enable scrolling when messages exceed height */
+            flex-grow: 1; /* Allow it to fill available space */
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: none; /* For Firefox */
+        }
+
+        #message-list::-webkit-scrollbar {
+            display: none; /* For Chrome/Safari */
+        }
+
+        .message {
+            max-width: 10%;
+            background-color: rgb(47, 47, 47);
+            color: rgb(0, 0, 0);
+            padding: 0.5rem;
+            border-radius: 4px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            max-width: 200px;
+            background-color: rgb(33, 33, 33);
+            color: rgb(255, 255, 255);
+            padding: 0.5rem;
+            border-radius: 4px;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+
+        .loading-animation {
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .loading-dots {
+            display: flex;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            margin: 0 3px;
+            border-radius: 50%;
+            background-color: rgb(255, 255, 255);
+            animation: loading 1s infinite;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes loading {
+            0%, 80%, 100% {
+                transform: scale(1);
+            }
+            40% {
+                transform: scale(1.5);
+            }
+        }
+
+        .input-group {
+            height: 6vh;
+            display: flex;
+            justify-content: center;
+            width: 90%;
+            padding: 0 0 1rem 0;
+            margin: auto;
+        }
+
+        .input-group input {
+            background-color: rgb(47, 47, 47);
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 30px;
+            width: 80%;
+            margin-right: 0.5rem;
+        }
+
+        .input-group button {
+            background-color: rgb(47, 47, 47);
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .input-group button:active {
+            background-color: rgb(200, 200, 200);
+        }
+
+        .input-group button.active {
+            background-color: rgb(100, 255, 100);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="body">
+        <div id="headtext">
+            <div id="message-list-head">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
+            </div>
+        </div>
+        <div id="chat-window">
+            <div id="message-list">
+                <!-- Messages will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <input
+            type="text"
+            id="message-input"
+            placeholder="Type your message here..."
+        />
+        <button id="action-button">🎤</button>
+        <button id="">next</button>
+    </div>
+
+    <div class="toast" id="toast">Couldn't understand, please try again.</div>
+
+    <script>
+        // Listen for messages from other iframes
+    window.addEventListener('message', function(event) {
+        // Ensure the message is of the expected type
+        if (event.data.type === 'topicSelected') {
+            const { topicName, topicDesc, topicIndex } = event.data;
+
+            // Do something with the received data, e.g., display it in the chatbot interface
+            displaySelectedTopic(topicName, topicDesc, topicIndex);
+        }
+    });
+
+    function displaySelectedTopic(topicName, topicDesc, topicIndex) {
+        // Update the chatbot interface with the topic details
+        document.getElementById('chat-window').innerHTML = `
+            <h2>Selected Topic: ${topicName}</h2>
+            <p>Description: ${topicDesc}</p>
+            <p>Index: ${topicIndex}</p>
+        `;
+    }
+        const actionButton = document.getElementById('action-button');
+        const messageInput = document.getElementById('message-input');
+        const messageList = document.getElementById('message-list');
+        const toast = document.getElementById('toast');
+        let recognition;
+
+        actionButton.addEventListener('mousedown', function() {
+            startVoiceRecognition(); // Start voice recognition
+            actionButton.innerHTML = "🎤"; // Indicate listening
+        });
+
+        actionButton.addEventListener('mouseup', function() {
+            stopVoiceRecognition(); // Stop recognition and send the message
+            actionButton.innerHTML = "🎤"; // Reset button text
+        });
+
+        actionButton.addEventListener('mouseleave', function() {
+            stopVoiceRecognition(); // Stop recognition if mouse leaves button
+            actionButton.innerHTML = "🎤"; // Reset button text
+        });
+
+        messageInput.addEventListener('input', function() {
+            if (messageInput.value.trim() === "") {
+                actionButton.innerHTML = "🎤"; // Change button to voice icon
+            } else {
+                actionButton.innerHTML = "Send"; // Change button to send
+            }
+        });
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+        }
+
+        function startVoiceRecognition() {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true;
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+                actionButton.innerHTML = "Send"; // Change button to send
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Error occurred in recognition: ' + event.error);
+                showToast("Couldn't understand, please try again.");
+            };
+
+            recognition.onend = function() {
+                actionButton.innerHTML = "🎤"; // Reset button text
+            };
+
+            recognition.start();
+        }
+
+        function stopVoiceRecognition() {
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && messageInput.value.trim() !== "") {
+                sendMessage(messageInput.value);
+                messageInput.value = ""; // Clear input after sending
+            }
+        });
+
+        document.getElementById('action-button').addEventListener('click', function() {
+            if (messageInput.value.trim() !== "") {
+                sendMessage(messageInput.value);
+                messageInput.value = ""; // Clear input after sending
+            }
+        });
+
+        function sendMessage(message) {
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message';
+            userMessage.textContent = message;
+            messageList.appendChild(userMessage);
+            messageList.scrollTop = messageList.scrollHeight; // Scroll to bottom
+
+            // Show loading animation in the message list
+            const loadingContainer = document.createElement('div');
+            loadingContainer.className = 'loading-animation';
+            loadingContainer.innerHTML = `
+                <div class="loading-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>`;
+            messageList.appendChild(loadingContainer);
+            messageList.scrollTop = messageList.scrollHeight; // Scroll to bottom
+
+            // Simulate bot response delay
+            setTimeout(() => {
+                messageList.removeChild(loadingContainer); // Remove loading animation
+                displayBotMessage("This is a bot response to: " + message);
+            }, 2000); // Adjust delay as needed
+        }
+
+        function displayBotMessage(response) {
+            const botMessage = document.createElement('div');
+            botMessage.className = 'bot-message';
+            botMessage.textContent = response;
+            messageList.appendChild(botMessage);
+            messageList.scrollTop = messageList.scrollHeight; // Scroll to bottom
+        }
+    </script>
+</body>
+</html>
