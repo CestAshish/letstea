@@ -8,106 +8,113 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * {
-            box-sizing: border-box; /* Ensure padding doesn't affect width/height */
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex; /* Use flexbox for layout */
-            height: 100vh; /* Full height */
-            overflow: hidden; /* Prevent scrolling */
-            background-color: #1d1d1d; /* Darker gray background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #1d1d1d;
         }
 
         .sidebar {
-            width: 250px; /* Width of the sidebar */
-            background-color: #222; /* Darker background for sidebar */
-            position: fixed; /* Fixed position on the left */
-            height: 100%; /* Full height */
-            overflow-y: auto; /* Allow vertical scrolling */
-            border-right: 1px solid #444; /* Darker right border for separation */
-            transition: transform 0.3s ease; /* Smooth transition for collapsing */
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
+            width: 250px;
+            background-color: #222;
+            position: fixed;
+            height: 100%;
+
+            border-right: 1px solid #444;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
             display: flex;
-            flex-direction: column; /* Stack content vertically */
-            padding-top: 20px; /* Space at the top */
+            flex-direction: column;
+            padding-top: 20px;
+        }
+          .sidebar::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
         }
 
         .collapsed {
-            transform: translateX(-100%); /* Move sidebar out of view */
+            transform: translateX(-100%);
         }
 
         .sidebar-content {
-            padding: 15px; /* Padding for content */
-            flex-grow: 1; /* Allow the content to grow */
+            padding: 5px;
+            flex-grow: 1;
         }
 
+        /* Minimalist Button Styling */
         .toggle-btn {
-            max-width: 25%;
-            margin: 10px; /* Space around buttons */
-            border-radius: 5px; /* Rounded button */
-            border: none; /* No border */
-            color: white; /* White text */
-            padding: 10px 15px; /* Padding for buttons */
-            cursor: pointer; /* Pointer cursor */
-            font-size: 16px; /* Font size */
-            transition: background-color 0.3s; /* Smooth transition for hover */
-            flex-shrink: 0; /* Prevent buttons from shrinking */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Shadow for depth */
-            background-color: #1d1d1d; /* Same as body background */
-        }
+            position: fixed;
+            top: 20px; /* Adjusted value to move the button lower */
+            left: 15px;
+            z-index: 999;
+            padding: 5px; /* Minimal padding to shrink the button size */
+            color: #fff;
+            background-color: transparent; /* No background color */
+            border: none;
+            cursor: pointer;
+            font-size: 24px; /* Make the icon size a bit larger */
+            transition: transform 0.3s ease;
+}
 
         .toggle-btn:hover {
-            background-color: #444; /* Darker on hover */
+            transform: scale(1.1); /* Slightly enlarges on hover */
+        }
+
+        .toggle-btn:focus {
+            outline: none;
         }
 
         h3 {
-            color: #fff; /* White text for headings */
-            text-align: center; /* Center heading */
-            margin-bottom: 15px; /* Space below heading */
+            top: 20px;
+            color: #fff;
+            text-align: center;
+            margin: 0 0 0 0;
         }
 
         #topic-list {
-            max-height: calc(100vh - 80px); /* Full height minus button and padding */
-            overflow-y: auto; /* Allow scrolling */
+            max-height: calc(100vh - 80px);
+            overflow-y: auto; /* Keep this to enable scrolling */
             display: flex;
-            flex-direction: column; /* Stack topics vertically */
-            margin-top: 15px; /* Add some space above topics */
+            flex-direction: column;
+            margin-top: 15px;
+
+            /* Hide scrollbar */
+            scrollbar-width: none; /* For Firefox */
+        }
+
+        #topic-list::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
         }
 
         .topic {
-            background-color: #333; /* Dark background for topics */
-            color: white; /* White text */
-            padding: 15px; /* Padding for topics */
-            border-radius: 4px; /* Rounded corners */
-            margin-bottom: 10px; /* Space between topics */
-            transition: background-color 0.3s, transform 0.3s; /* Smooth hover effect */
-            cursor: pointer; /* Show pointer on hover */
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
         .topic.selected {
-            background-color: white; /* Highlighted background */
-            color: black; /* Black text */
+            background-color: white;
+            color: black;
         }
 
         .topic:hover {
-            background-color: #555; /* Darker on hover */
-        }
-
-        /* Hide scrollbar */
-        #topic-list::-webkit-scrollbar {
-            display: none; /* For Chrome/Safari */
-        }
-        #topic-list {
-            scrollbar-width: none; /* For Firefox */
+            background-color: #555;
         }
     </style>
 </head>
 <body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
     <div id="sidebar" class="sidebar">
-        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
         <div id="sidebar-content" class="sidebar-content">
             <h3>Topics</h3>
             <div id="topic-list">
@@ -123,26 +130,6 @@
     </div>
 
     <script>
-        function sendMessageToChatbot(topicName, topicDesc, topicIndex) {
-        // Get the iframe that contains the chatbot
-        const chatbotFrame = parent.document.querySelector('.right iframe');
-
-        // Create a message object
-        const message = {
-            type: 'topicSelected',
-            topicName: topicName,
-            topicDesc: topicDesc,
-            topicIndex: topicIndex
-        };
-
-        // Send the message to the chatbot iframe
-        chatbotFrame.contentWindow.postMessage(message, '*');
-    }
-
-    // Example function that could be called when a topic is selected
-    function selectTopic(topicName, topicDesc, topicIndex) {
-        sendMessageToChatbot(topicName, topicDesc, topicIndex);
-    }
         const level = "B2"; // Change this variable to select different levels
         const indexToScroll = 59; // Index to highlight and scroll to (1-based)
         let currentSelectedTopic = null; // Variable to keep track of the currently selected topic
