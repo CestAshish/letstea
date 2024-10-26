@@ -22,21 +22,24 @@
             padding: 0;
         }
 
+
         #headtext {
-            max-height: 40vh;
+            max-height: 30vh;
             flex-grow: 1;
-            padding: 1rem;
+
             overflow-y: auto;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            width: 95%;
-            margin: auto;
+           width: 95%;
+            margin: 0 auto;
         }
 
         #message-list-head {
+            max-height: 100%
             border-radius: 8px;
+            padding:1rem;
             background-color: rgb(47, 47, 47);
             overflow-y: auto;
             flex-grow: 1;
@@ -52,7 +55,7 @@
 
         #chat-window {
             flex-grow: 1; /* Allow it to grow to fill available space */
-            max-height: 40vh; /* Set a max height for the chat window */
+            max-height: 56vh; /* Set a max height for the chat window */
             overflow-y: auto; /* Allow vertical scrolling */
             border-radius: 4px;
             display: flex;
@@ -79,7 +82,7 @@
         .message {
             max-width: 10%;
             background-color: rgb(47, 47, 47);
-            color: rgb(0, 0, 0);
+            color: rgb(225,225,225);
             padding: 0.5rem;
             border-radius: 4px;
             align-self: flex-end;
@@ -190,13 +193,10 @@
 </head>
 <body>
     <div class="body">
+
         <div id="headtext">
             <div id="message-list-head">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...<br>
+                <!-- Topic and description will be displayed here -->
             </div>
         </div>
         <div id="chat-window">
@@ -213,7 +213,7 @@
             placeholder="Type your message here..."
         />
         <button id="action-button">🎤</button>
-        <button id="">next</button>
+        <button id="next-button">next</button>
     </div>
 
     <div class="toast" id="toast">Couldn't understand, please try again.</div>
@@ -223,28 +223,55 @@
         const messageInput = document.getElementById('message-input');
         const messageList = document.getElementById('message-list');
         const toast = document.getElementById('toast');
+        const messageListHead = document.getElementById('message-list-head');
         let recognition;
 
+        // Function to update the display of topic and description in message-list-head
+        function updateDisplay() {
+            const topic = localStorage.getItem('sharedTopic');
+            const desc = localStorage.getItem('sharedDesc');
+
+            messageListHead.innerHTML = `
+                <strong>${topic || 'Topic: Not set'}</strong><br>
+                ${desc || 'Description: Not set'}<br>
+            `;
+        }
+
+        // Update display on page load
+        updateDisplay();
+
+        // Listen for storage changes
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'sharedTopic' || event.key === 'sharedDesc') {
+                updateDisplay();
+            }
+        });
+
+        // Also check for updates if the variable was changed in the same tab
+        window.addEventListener('load', () => {
+            updateDisplay();
+        });
+
         actionButton.addEventListener('mousedown', function() {
-            startVoiceRecognition(); // Start voice recognition
-            actionButton.innerHTML = "🎤"; // Indicate listening
+            startVoiceRecognition();
+            actionButton.innerHTML = "🎤";
         });
 
         actionButton.addEventListener('mouseup', function() {
-            stopVoiceRecognition(); // Stop recognition and send the message
-            actionButton.innerHTML = "🎤"; // Reset button text
+            stopVoiceRecognition();
+            actionButton.innerHTML = "🎤";
         });
 
         actionButton.addEventListener('mouseleave', function() {
-            stopVoiceRecognition(); // Stop recognition if mouse leaves button
-            actionButton.innerHTML = "🎤"; // Reset button text
+            stopVoiceRecognition();
+            actionButton.innerHTML = "🎤";
         });
 
         messageInput.addEventListener('input', function() {
             if (messageInput.value.trim() === "") {
-                actionButton.innerHTML = "🎤"; // Change button to voice icon
+                actionButton.innerHTML = "🎤";
             } else {
-                actionButton.innerHTML = "Send"; // Change button to send
+                actionButton.innerHTML = "Send";
             }
         });
 
@@ -253,7 +280,7 @@
             toast.style.display = 'block';
             setTimeout(() => {
                 toast.style.display = 'none';
-            }, 3000); // Hide after 3 seconds
+            }, 3000);
         }
 
         function startVoiceRecognition() {
@@ -264,7 +291,7 @@
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
                 messageInput.value = transcript;
-                actionButton.innerHTML = "Send"; // Change button to send
+                actionButton.innerHTML = "Send";
             };
 
             recognition.onerror = function(event) {
@@ -273,7 +300,7 @@
             };
 
             recognition.onend = function() {
-                actionButton.innerHTML = "🎤"; // Reset button text
+                actionButton.innerHTML = "🎤";
             };
 
             recognition.start();
@@ -288,14 +315,14 @@
         messageInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter' && messageInput.value.trim() !== "") {
                 sendMessage(messageInput.value);
-                messageInput.value = ""; // Clear input after sending
+                messageInput.value = "";
             }
         });
 
         document.getElementById('action-button').addEventListener('click', function() {
             if (messageInput.value.trim() !== "") {
                 sendMessage(messageInput.value);
-                messageInput.value = ""; // Clear input after sending
+                messageInput.value = "";
             }
         });
 
@@ -304,9 +331,8 @@
             userMessage.className = 'message';
             userMessage.textContent = message;
             messageList.appendChild(userMessage);
-            messageList.scrollTop = messageList.scrollHeight; // Scroll to bottom
+            messageList.scrollTop = messageList.scrollHeight;
 
-            // Show loading animation in the message list
             const loadingContainer = document.createElement('div');
             loadingContainer.className = 'loading-animation';
             loadingContainer.innerHTML = `
@@ -316,13 +342,12 @@
                     <div class="dot"></div>
                 </div>`;
             messageList.appendChild(loadingContainer);
-            messageList.scrollTop = messageList.scrollHeight; // Scroll to bottom
+            messageList.scrollTop = messageList.scrollHeight;
 
-            // Simulate bot response delay
             setTimeout(() => {
-                messageList.removeChild(loadingContainer); // Remove loading animation
+                messageList.removeChild(loadingContainer);
                 displayBotMessage("This is a bot response to: " + message);
-            }, 2000); // Adjust delay as needed
+            }, 2000);
         }
 
         function displayBotMessage(response) {
@@ -330,7 +355,7 @@
             botMessage.className = 'bot-message';
             botMessage.textContent = response;
             messageList.appendChild(botMessage);
-            messageList.scrollTop = messageList.scrollHeight; // Scroll to bottom
+            messageList.scrollTop = messageList.scrollHeight;
         }
     </script>
 </body>

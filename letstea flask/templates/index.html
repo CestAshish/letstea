@@ -3,34 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizontal Split Viewports with Iframes</title>
+    <title>Dynamic Sidebar Chat</title>
     <style>
+        /* General reset and body styling */
         body {
-            display: flex; /* Use flexbox for horizontal layout */
-            margin: 0; /* Remove default margins */
-            height: 100vh; /* Set height to 100% of the viewport height */
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f4f5f7;
         }
-        .left {
-            flex: 0 0 20%; /* Fixed width of 20% */
+
+        /* Navbar styling */
+        .navbar {
+            height: 9vh;
+             background-color: rgb(33, 33, 33);
+            color: white;
+            display: flex;
+            align-items: center;
+
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Toggle button in navbar on the left */
+        .toggle-btn {
+            font-size: 20px;
+            color: white;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding:1rem;
 
         }
-        .right {
-            flex: 0 0 80%; /* Fixed width of 80% */
+
+        /* Main content area with sidebar and chat content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            height: 91vh;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+
 
         }
+
+        /* Collapsed sidebar */
+        .collapsed {
+            flex: 0 0 0;
+        }
+
+        /* Chat content styling */
+        .chat-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Full-width chat when sidebar is collapsed */
+        .full-width {
+            flex: 0 0 100%;
+        }
+
         iframe {
-            width: 100%; /* Take full width of the container */
-            height: 100%; /* Take full height of the container */
-            border: none; /* Remove default border */
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
-    <div class="left">
-        <iframe src="sidebar.html" title="Left Content"></iframe>
+    <!-- Navbar -->
+    <div class="navbar">
+        <button class="toggle-btn" id="toggle-btn">X</button>
+
     </div>
-    <div class="right">
-        <iframe src="chatbot-interface.html" title="Right Content"></iframe>
+
+    <!-- Main content area for sidebar and chat content -->
+    <div class="main-content">
+        <div id="sidebar-container" class="sidebar">
+            <iframe src="sidebar.html" title="Sidebar Content"></iframe>
+        </div>
+
+        <div id="chat-container" class="chat-content">
+            <iframe src="chatbot-interface.html" title="Chat Content"></iframe>
+        </div>
     </div>
+
+    <script>
+        const sidebarContainer = document.getElementById('sidebar-container');
+        const chatContainer = document.getElementById('chat-container');
+        const toggleBtn = document.getElementById('toggle-btn');
+
+        function toggleSidebar() {
+            const isCollapsed = sidebarContainer.classList.toggle('collapsed');
+            chatContainer.classList.toggle('full-width', isCollapsed);
+            toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
+        }
+
+        toggleBtn.addEventListener('click', toggleSidebar);
+    </script>
 </body>
 </html>
