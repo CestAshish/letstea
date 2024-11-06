@@ -2,111 +2,230 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Sidebar Chat</title>
     <style>
-        /* General reset and body styling */
         body {
-            display: flex;
-            flex-direction: column;
-            margin: 0;
-            height: 100vh;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            background-color: #f4f5f7;
-        }
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background-color:rgb(33,33,33);
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #f4f5f7;
+}
 
-        /* Navbar styling */
-        .navbar {
-            height: 9vh;
-             background-color: rgb(33, 33, 33);
-            color: white;
-            display: flex;
-            align-items: center;
+body::-webkit-scrollbar {
+    display: none; /* For Chrome/Safari */
+}
 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+/* Navbar styling */
+.navbar {
+background-color: rgb(23,23,23);
+    display: flex;
+    height: 8vh;
+    width:100vw;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-        /* Toggle button in navbar on the left */
-        .toggle-btn {
-            font-size: 20px;
-            color: white;
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            padding:1rem;
-
-        }
-
-        /* Main content area with sidebar and chat content */
-        .main-content {
-            display: flex;
-            flex: 1;
-            height: 91vh;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* Sidebar styling */
-        .sidebar {
+.navbar-left {
+min-width: 250px;
+    flex: 0 0 25%; /* Left 25% */
+     /* Change this to your desired color */
+    display: flex;
+    align-items: center; /* Center content vertically */
+    justify-content: left; /* Center content horizontally */
+    color: white; /* Text color */
+}
 
 
-        }
 
-        /* Collapsed sidebar */
-        .collapsed {
-            flex: 0 0 0;
-        }
+.navbar-right {
+    flex: 0 0 75%; /* Right 75% */
+    background-color: rgb(33,33,33); /* Change this to your desired color */
+    display: flex;
+    align-items: center; /* Center content vertically */
+    justify-content: flex-end; /* Align buttons to the right */
+    color: white; /* Text color */
+}
 
-        /* Chat content styling */
-        .chat-content {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
 
-        /* Full-width chat when sidebar is collapsed */
-        .full-width {
-            flex: 0 0 100%;
-        }
+.toggle-btn,
+.toggle-btn-2 {
+    font-size: 20px;
+    color: white;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 1rem;
+}
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+.toggle-btn-2 {
+    display: none; /* Hide by default */
+}
+
+/* Main content styling */
+.main-content {
+    width:100vw;
+    overflow: hidden;
+    display: flex;
+    flex: 1;
+    height: 92vh; /* Adjust height calculation based on navbar */
+}
+
+/* Sidebar and chat content */
+.sidebar {
+    min-width: 250px;
+    flex: 0 0 25%;
+    background-color: rgb(23,23,23);
+    color: white;
+}
+
+.sidebarfull {
+    flex: 0 0 100%;
+    background-color: rgb(23,23,23);
+    color: white;
+}
+
+.collapsed {
+    min-width: 0px;
+    flex: 0 0 0;
+    visibility: hidden; /* Hide when collapsed */
+    opacity: 0; /* Make transparent */
+}
+
+.chat-content {
+    flex: 0 0 75%;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.full-width {
+    flex: 0 0 100%; /* Make chat content full width */
+}
+
+iframe {
+    width: 100%;
+    height: 100%; /* Use full height of container */
+    border: none;
+    overflow: hidden;
+}
+
+@media (max-width: 500px) {
+
+    .toggle-btn { display: none; }
+    .toggle-btn-2 { display: flex; }
+    .chat-content {
+    flex: 0 0 100%;
+
+}
+
+
+}
+
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <div class="navbar">
+    <div class="navbar-left"> <!-- Left section -->
         <button class="toggle-btn" id="toggle-btn">X</button>
+        <button class="toggle-btn-2" id="toggle-btn-2">☰</button>
+    </div>
+    <div class="navbar-right"> <!-- Right section -->
 
     </div>
+</div>
 
     <!-- Main content area for sidebar and chat content -->
     <div class="main-content">
         <div id="sidebar-container" class="sidebar">
-            <iframe src="sidebar.html" title="Sidebar Content"></iframe>
+<iframe src="{{ url_for('static', filename='sidebar.html') }}" title="Sidebar Content"></iframe>
         </div>
-
         <div id="chat-container" class="chat-content">
-            <iframe src="chatbot-interface.html" title="Chat Content"></iframe>
+<iframe src="{{ url_for('static', filename='chatbot-interface.html') }}" title="Chat Content" ></iframe>
         </div>
     </div>
-
     <script>
         const sidebarContainer = document.getElementById('sidebar-container');
         const chatContainer = document.getElementById('chat-container');
         const toggleBtn = document.getElementById('toggle-btn');
-
+        const toggleBtn2 = document.getElementById('toggle-btn-2');
         function toggleSidebar() {
             const isCollapsed = sidebarContainer.classList.toggle('collapsed');
             chatContainer.classList.toggle('full-width', isCollapsed);
             toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
+            updateNavbarColor();
         }
+        function toggleSidebar2() {
+            const isCollapsed = sidebarContainer.classList.toggle('collapsed');
+            if (isCollapsed) {
+                sidebarContainer.classList.remove('sidebarfull'); // Collapse sidebar
+                chatContainer.classList.add('full-width'); // Expand chat content
+                toggleBtn2.innerHTML = "☰"; // Change button to open
 
+            } else {
+                sidebarContainer.classList.add('sidebarfull'); // Expand sidebar
+                chatContainer.classList.remove('full-width'); // Reset chat content
+                toggleBtn2.innerHTML = "X"; // Change button to close
+            }
+            updateNavbarColor();
+        }
+        function checkWindowSize() {
+            if (window.innerWidth < 500) {
+                // Show toggle button 2 when screen is less than 500px
+                sidebarContainer.classList.add('collapsed'); // Collapse sidebar on smaller screens
+                chatContainer.classList.add('full-width'); // Expand chat content
+            } else if (window.innerWidth >= 500 && window.innerWidth < 900) {
+                // Handle case for screens between 500px and 900px
+                sidebarContainer.classList.add('collapsed'); // Ensure sidebar is visible
+                sidebarContainer.classList.remove('sidebarfull'); // Ensure sidebar isn't in full width
+                chatContainer.classList.remove('full-width'); // Reset chat content
+            } else {
+                // Show toggle button 1 when screen is greater than 800px
+                sidebarContainer.classList.remove('collapsed'); // Expand sidebar on larger screens
+                sidebarContainer.classList.remove('sidebarfull'); // Ensure sidebar isn't in full width
+                chatContainer.classList.remove('full-width'); // Reset chat content
+            }
+            updateNavbarColor();
+            // Update button visibility
+            updateButtonVisibility();
+            updateToggleButton(); // Update button text based on sidebar state
+        }
+        function updateButtonVisibility() {
+            const isLessThan500px = window.innerWidth < 500;
+            toggleBtn.style.display = isLessThan500px ? 'none' : 'block'; // Show or hide toggle button 1
+            toggleBtn2.style.display = isLessThan500px ? 'block' : 'none'; // Show or hide toggle button 2
+        }
+        function updateToggleButton() {
+            const isCollapsed = sidebarContainer.classList.contains('collapsed');
+            toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
+        }
+        checkWindowSize();
+        window.addEventListener('resize', checkWindowSize);
         toggleBtn.addEventListener('click', toggleSidebar);
+        toggleBtn2.addEventListener('click', toggleSidebar2);
+
+       function updateNavbarColor() {
+            const isCollapsed = sidebarContainer.classList.contains('collapsed');
+            const navbar = document.querySelector('.navbar');
+            const navbarRight = document.querySelector('.navbar-right'); // Fixed variable name
+             const isLessThan500px = window.innerWidth < 500;
+
+             if(isLessThan500px){
+             // Change navbar color based on whether the sidebar is collapsed
+            navbar.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(23, 23, 23)';
+            navbarRight.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(23, 23, 23)'; // Adjust colors based on sidebar state
+        }
+        else{
+        navbar.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(23, 23, 23)';
+            navbarRight.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(33, 33, 33)'; // Adjust colors based on sidebar state
+        }
+    }
     </script>
 </body>
 </html>

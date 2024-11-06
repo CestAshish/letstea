@@ -1,33 +1,2571 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/style.css" />
-    <script  src="../static/script.js" defer></script>
-<!DOCTYPE html>
+    <title>Responsive Navbar with Popup Menu</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Hero style */
 
+        /* Heading, Paragraph, Button Styling */
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 20px; /* Center paragraph */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #272728;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 auto 30px; /* Center button */
+            display: block; /* Make button block-level to center */
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #666666;
+        }
+
+        /* Container for auto-animated rows */
+        .animated-gallery {
+            width: 100%;
+            overflow: hidden;
+            position: relative; /* Needed for absolutely positioned elements */
+        }
+
+        /* Row styling with large images */
+        .animated-row {
+            display: flex;
+            position: relative;
+            animation-duration: 10s; /* Control speed of scrolling */
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            justify-content: center; /* Center the images */
+        }
+
+        /* Animation for the top row scrolling left */
+        .top-row {
+            animation-name: scroll-left; /* Set the scroll animation */
+        }
+
+        /* Animation for the bottom row scrolling right */
+        .bottom-row {
+            animation-name: scroll-right; /* Set the scroll animation */
+        }
+
+        /* Keyframes for left scrolling */
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-20%); /* Shift to reveal next image */
+            }
+        }
+
+        /* Keyframes for right scrolling */
+        @keyframes scroll-right {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(20%); /* Shift to reveal next image */
+            }
+        }
+
+        /* Image styling for full-width, larger images */
+        .animated-row img {
+            width: 300px; /* Fixed width for images */
+            height: 300px; /* Fixed height for 1:1 ratio */
+            object-fit: cover;
+            margin: 0 5px; /* Space between images */
+            border-radius: 10px;
+        }
+
+        /* Each row container */
+        .row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px; /* Space between rows */
+        }
+
+        /* Duplicate images for circular effect */
+        .duplicate {
+            display: none; /* Hide duplicate images from view */
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #272726; /* Changed background color to black */
+            padding-left: 1rem; /* Padding for navbar */
+            position: relative; /* Allow positioning for children */
+            display: fixed; /* Use flexbox for alignment */
+            align-items: center; /* Align items vertically */
+            justify-content: space-between; /* Space out elements */
+        }
+
+        /* Centering the brand */
+        .brand-wrapper {
+            flex-grow: 1; /* Allow this to take up remaining space */
+            text-align: center; /* Center text */
+        }
+
+        .navbar-brand img {
+            max-height: 50px; /* Set max height for the logo */
+            width: auto; /* Maintain aspect ratio */
+        }
+
+        .navbar-brand {
+            font-family: 'Itim'; /* Custom font */
+            font-size: 1.2rem; /* Font size for brand */
+            color: white !important; /* White brand name */
+            display: inline-block; /* Keep brand inline for centering */
+        }
+
+        .navbar-nav {
+            display: flex; /* Ensure the nav links are displayed in a row */
+            margin: 0; /* Reset margin */
+        }
+
+        .navbar-nav .nav-link {
+            color: #B0A9A0; /* Change link color to white */
+            margin-right: 1rem; /* Space between links */
+        }
+
+        .btn-start {
+            font-weight: bold;
+            background-color: #333333; /* Button color */
+            color: #B0A9A0; /* Button text color */
+            right: 1rem; /* Align to right */
+            top: auto; /* Align to top */
+        }
+
+        .btn-start:hover {
+            background-color: grey; /* Button hover color */
+            color: white !important; /* Keep text color on hover */
+        }
+
+        .hamburger-btn {
+            left: 1rem; /* Align hamburger to left */
+            top: auto;
+            z-index: 1001; /* Ensure hamburger is above overlay */
+            display: none; /* Initially hidden on large screens */
+        }
+
+        .menu-overlay {
+            display: none; /* Initially hidden */
+            position: fixed; /* Fixed overlay */
+            left: 0rem; /* Align hamburger to left */
+            top: 4.5rem; /* Align with navbar */
+            width: 100%; /* Full width for overlay */
+            height: 100%; /* Full height */
+            z-index: 750; /* Below button but above other elements */
+        }
+
+        .menu-content {
+            background-color: white; /* Menu background color */
+            padding: 1rem; /* Padding for menu */
+            border: 2px solid grey; /* Grey border */
+            border-radius: 5px; /* Rounded corners */
+            width: auto; /* Set width to fit options dynamically */
+            max-width: 250px; /* Prevent overflow */
+            position: absolute; /* Positioning for menu */
+            top: 1rem; /* Align the menu to the top */
+            left: 1rem; /* Align the menu to the left */
+            pointer-events: auto; /* Allow pointer events */
+        }
+
+        .menu-content ul {
+            list-style: none; /* Remove default list style */
+            padding: 0; /* Reset padding */
+            margin: 0; /* Reset margin */
+        }
+
+        .menu-content ul li {
+            padding: 0.5rem 0; /* Padding for list items */
+        }
+
+        .menu-content ul li a {
+            color: black; /* Link color */
+            text-decoration: none; /* Remove underline */
+            font-size: 1.2rem; /* Font size for links */
+        }
+
+        .menu-content ul li a:hover {
+            color: grey; /* Hover color for links */
+        }
+
+        /* Responsive styles */
+        @media (max-width: 991px) {
+            .navbar-nav {
+                display: none; /* Hide navbar items on small screens */
+            }
+
+            .hamburger-btn {
+                display: block; /* Show hamburger menu */
+                position: absolute; /* Align hamburger to absolute position */
+                left: 1rem; /* Align to left */
+                top: 1rem; /* Align to top */
+                z-index: 1002; /* Ensure hamburger is above everything */
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <div class="body">
-        <div id="chat-window">
-            <div id="message-list">
-                <!-- Messages will be displayed here -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top ">
+        <div class="container-fluid">
+            <!-- Menu Items for Large Screens -->
+            <div class="navbar-nav">
+                <a class="nav-link" href="#homenav">Home</a>
+                <a class="nav-link" href="#aboutus">About</a>
+                     <a class="nav-link" href="#features">Features</a>
+                <a class="nav-link" href="#contactus">Contact Us</a>
+
+            </div>
+
+            <!-- Brand Title -->
+            <div class="brand-wrapper" id="homenav">
+                <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename='logo-text.png') }}" alt="Logo">
+</a>
+            </div>
+
+            <!-- Hamburger Menu for Smaller Screens -->
+            <div class="hamburger-btn">
+                <button style="background-color: #333333; color: #B0A9A0; " id="toggleMenu" class="btn btn-dark">
+                    &#9776; <!-- Hamburger Icon -->
+                </button>
+            </div>
+
+            <!-- Start Learning Button -->
+            <a class="btn btn-start"href="{{ url_for('login') }}">Start Learning</a>
+        </div>
+    </nav>
+
+    <!-- Custom Menu Overlay for Small Screens -->
+    <div id="menuOverlay" class="menu-overlay">
+        <div class="menu-content">
+            <ul id="menuItems">
+                <li><a href="#homenav">Home</a></li>
+                <li><a href="#aboutus">About</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#contactus">Contact Us</a></li>
+            </ul>
+        </div>
+    </div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Shimmering Generous Mosquito</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: Inter;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style:normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: var(--dl-color-theme-neutral-dark);
+        background: var(--dl-color-theme-neutral-light);
+
+        fill: var(--dl-color-theme-neutral-dark);
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/animate.css@4.1.1/animate.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
+    /><style>.hero17-header78 {
+  gap: var(--dl-space-space-threeunits);
+  width: 100%;
+  height: auto;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+.hero17-column {
+  gap: var(--dl-space-space-oneandhalfunits);
+  width: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-bottom: var(--dl-space-space-unit);
+}
+.hero17-content1 {
+  gap: var(--dl-space-space-oneandhalfunits);
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+.hero17-text1 {
+  text-align: center;
+}
+.hero17-text2 {
+  text-align: center;
+}
+.hero17-actions {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  align-items: flex-start;
+  padding-top: var(--dl-space-space-unit);
+}
+.hero17-content2 {
+  gap: var(--dl-space-space-oneandhalfunits);
+  width: 100%;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.hero17-row-container1 {
+  width: 100%;
+}
+.hero17-placeholder-image10 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image11 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image12 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image13 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image14 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image15 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image16 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image17 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image18 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image19 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image20 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image21 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-row-container2 {
+  width: 100%;
+}
+.hero17-placeholder-image22 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image23 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image24 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image25 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image26 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image27 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image28 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image29 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image30 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image31 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image32 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-placeholder-image33 {
+  width: 400px;
+  height: 400px;
+}
+.hero17-container2 {
+  display: contents;
+}
+.hero17-fragment1 {
+  display: contents;
+}
+.hero17-text5 {
+  display: inline-block;
+}
+.hero17-fragment2 {
+  display: contents;
+}
+.hero17-text6 {
+  display: inline-block;
+}
+.hero17-fragment3 {
+  display: contents;
+}
+.hero17-text7 {
+  display: inline-block;
+}
+.hero17-fragment4 {
+  display: contents;
+}
+.hero17-text8 {
+  display: inline-block;
+}
+@media(max-width: 767px) {
+  .hero17-content2 {
+    width: 100%;
+  }
+}
+@media(max-width: 479px) {
+  .hero17-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  .hero17-button1 {
+    width: 100%;
+  }
+  .hero17-button2 {
+    width: 100%;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div>
+      <div class="hero17-header78">
+        <div class="hero17-column thq-section-max-width thq-section-padding">
+          <div class="hero17-content1">
+            <h1 class="hero17-text1 thq-heading-1">
+              <fragment class="hero17-fragment2">
+                <span class="hero17-text6">
+                  Master English, One Conversation at a Time
+                </span>
+              </fragment>
+            </h1>
+            <p class="hero17-text2 thq-body-large">
+              <fragment class="hero17-fragment4">
+                <span class="hero17-text8">
+                  Let'sTea.Tech is an innovative app designed to enhance English
+                  language skills through personalized interactions. Our
+                  platform tailors lessons to each user’s interests and
+                  proficiency, making learning enjoyable.
+                </span>
+              </fragment>
+            </p>
+          </div>
+          <div class="hero17-actions">
+            <a class="thq-button-filled hero17-button1" href="{{ url_for('login') }}">
+              <span class="thq-body-small">
+                <fragment class="hero17-fragment3">
+                  <span class="hero17-text7">Sign Up Now</span>
+                </fragment>
+              </span>
+            </a>
+
+          </div>
+        </div>
+        <div class="hero17-content2">
+          <div
+            class="hero17-row-container1 thq-mask-image-horizontal thq-animated-group-container-horizontal"
+          >
+            <div class="thq-animated-group-horizontal">
+              <img
+                alt="English Learning Illustration"
+                src="https://images.unsplash.com/photo-1693509203994-8a4021550f2b?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image10 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Personalized Learning Illustration"
+                src="https://images.unsplash.com/photo-1652555698044-9325df5f0781?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image11 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1528054433354-7ab84caaccc0?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM0OXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image12 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1726066012685-f5ccd26b6f55?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image13 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1668605335684-c97ce92cbd76?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image14 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1602743297108-4c9061884285?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image15 thq-img-scale thq-img-ratio-1-1"
+              />
+            </div>
+            <div class="thq-animated-group-horizontal">
+              <img
+                alt="English Learning Illustration"
+                src="https://images.unsplash.com/photo-1693509203994-8a4021550f2b?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image16 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Personalized Learning Illustration"
+                src="https://images.unsplash.com/photo-1652555698044-9325df5f0781?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image17 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1528054433354-7ab84caaccc0?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM0OXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image18 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1726066012685-f5ccd26b6f55?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image19 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1668605335684-c97ce92cbd76?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image20 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1534312527009-56c7016453e6?ixid=M3w5MTMyMXwwfDF8c2VhcmNofDIxfHxhYnN0cmFjdHxlbnwwfHx8fDE3MTA4NzA5MzB8MA&amp;ixlib=rb-4.0.3&amp;w=1500"
+                class="hero17-placeholder-image21 thq-img-scale thq-img-ratio-1-1"
+              />
+            </div>
+          </div>
+          <div
+            class="hero17-row-container2 thq-mask-image-horizontal thq-animated-group-container-horizontal"
+          >
+            <div class="thq-animated-group-horizontal-reverse">
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1700150282220-d02cd4994cd5?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image22 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1586335925967-cb6bea91856c?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image23 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1503944918282-d3a7844a9641?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image24 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1656087815769-89dd3c82f767?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image25 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1625111381856-5cdedf9ae7a4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image26 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1689969936663-8ba5ba3c1d64?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image27 thq-img-scale thq-img-ratio-1-1"
+              />
+            </div>
+            <div class="thq-animated-group-horizontal-reverse">
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1700150282220-d02cd4994cd5?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image28 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1586335925967-cb6bea91856c?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image29 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1503944918282-d3a7844a9641?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image30 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1656087815769-89dd3c82f767?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image31 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1625111381856-5cdedf9ae7a4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="hero17-placeholder-image32 thq-img-scale thq-img-ratio-1-1"
+              />
+              <img
+                alt="Hero Image"
+                src="https://images.unsplash.com/photo-1568214379698-8aeb8c6c6ac8?ixid=M3w5MTMyMXwwfDF8c2VhcmNofDEyfHxncmFmaWN8ZW58MHx8fHwxNzE1Nzk0OTk5fDA&amp;ixlib=rb-4.0.3&amp;w=1500"
+                class="hero17-placeholder-image33 thq-img-scale thq-img-ratio-1-1"
+              />
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="hero17-container2">
+            <style>
+              @keyframes scroll-x {
+                from {
+                  transform: translateX(0);
+                }
+                to {
+                  transform: translateX(calc(-100% - 16px));
+                }
+              }
+
+              @keyframes scroll-y {
+                from {
+                  transform: translateY(0);
+                }
+                to {
+                  transform: translateY(calc(-100% - 16px));
+                }
+              }
+            </style>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      defer=""
+      src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
+    ></script>
+  </body>
+</html>
+
+<!--    &lt;!&ndash; Main Content &ndash;&gt;-->
+<!--    <div class="container" style="margin-top:2rem;margin-bottom:3rem;">-->
+<!--        <h1>Master English, One Conversation at a Time</h1>-->
+<!--<p>Let'sTea is an innovative app designed to enhance-->
+<!--                      English language skills through personalized interactions.-->
+<!--                      Our platform tailors lessons to each user’s interests and-->
+<!--                      proficiency, making learning enjoyable.</p>-->
+<!--        <button id="exploreBtn" >Start Learning</button>-->
+<!--    </div>-->
+
+<!--  &lt;!&ndash; Animated Gallery &ndash;&gt;-->
+<!--  <div class="animated-gallery" >-->
+<!--    <div class="row">-->
+<!--      <div class="animated-row top-row">-->
+<!--        <img-->
+<!--                    alt="English Learning Illustration"-->
+<!--                    src="https://images.unsplash.com/photo-1693509203994-8a4021550f2b?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                    class="hero17-placeholder-image10 thq-img-scale thq-img-ratio-1-1"-->
+<!--                  />-->
+<!--                  <img-->
+<!--                    alt="Personalized Learning Illustration"-->
+<!--                    src="https://images.unsplash.com/photo-1652555698044-9325df5f0781?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                    class="hero17-placeholder-image11 thq-img-scale thq-img-ratio-1-1"-->
+<!--                  />-->
+<!--                  <img-->
+<!--                    alt="Hero Image"-->
+<!--                    src="https://images.unsplash.com/photo-1528054433354-7ab84caaccc0?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM0OXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                    class="hero17-placeholder-image12 thq-img-scale thq-img-ratio-1-1"-->
+<!--                  />-->
+<!--                  <img-->
+<!--                    alt="Hero Image"-->
+<!--                    src="https://images.unsplash.com/photo-1726066012685-f5ccd26b6f55?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                    class="hero17-placeholder-image13 thq-img-scale thq-img-ratio-1-1"-->
+<!--                  />-->
+<!--                  <img-->
+<!--                    alt="Hero Image"-->
+<!--                    src="https://images.unsplash.com/photo-1668605335684-c97ce92cbd76?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                    class="hero17-placeholder-image14 thq-img-scale thq-img-ratio-1-1"-->
+<!--                  />-->
+<!--                  <img-->
+<!--                    alt="Hero Image"-->
+<!--                    src="https://images.unsplash.com/photo-1602743297108-4c9061884285?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                    class="hero17-placeholder-image15 thq-img-scale thq-img-ratio-1-1"-->
+<!--                  />-->
+
+<!--        </div>-->
+<!--    </div>-->
+<!--      <div class="row">-->
+<!--      <div class="animated-row bottom-row">-->
+<!--        <img src="https://images.unsplash.com/photo-1656087815769-89dd3c82f767?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                     alt="Image 9">-->
+<!--        <img src="https://images.unsplash.com/photo-1625111381856-5cdedf9ae7a4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                   alt="Image 10">-->
+<!--        <img src="https://images.unsplash.com/photo-1700150282220-d02cd4994cd5?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                   alt="Image 6">-->
+<!--        <img src="https://images.unsplash.com/photo-1586335925967-cb6bea91856c?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                     alt="Image 7">-->
+<!--        <img src="https://images.unsplash.com/photo-1503944918282-d3a7844a9641?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                     alt="Image 8">-->
+<!--        <img src="https://images.unsplash.com/photo-1656087815769-89dd3c82f767?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1NXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                     alt="Image 9">-->
+<!--        <img src="https://images.unsplash.com/photo-1625111381856-5cdedf9ae7a4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"-->
+<!--                   alt="Image 10">-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!-- Features Section -->
+    <div id="aboutus">
+<div id="section1" class="section offset"></div>
+<features25-wrapper class="features25-wrapper">
+    <style>
+        :root {
+            --section-padding: 2rem; /* Padding for the section */
+            --tab-padding: 0.5rem; /* Padding for each tab */
+            --image-margin: 0.5rem; /* Margin for images */
+            --divider-color: #ddd; /* Color for the divider line */
+            --divider-height: 1px; /* Height of the divider */
+            --divider-margin: 0; /* No margin around the divider to reduce space */
+        }
+
+        .features25-wrapper {
+            padding: var(--section-padding);
+        }
+
+        .features25-tabs-menu > div {
+            padding: var(--tab-padding);
+        }
+
+        .divider {
+            height: var(--divider-height); /* Height of the divider */
+            background-color: var(--divider-color); /* Divider color */
+            margin: var(--divider-margin) 0; /* No spacing around the divider */
+            margin-bottom: 2rem;
+        }
+
+        .features25-image-container {
+            display: flex; /* Flexbox for proper alignment */
+            justify-content: center; /* Center images */
+            align-items: center; /* Center images vertically */
+            margin-top: 1rem; /* Space between tabs and images */
+        }
+
+        .features25-image-container img {
+            margin: var(--image-margin);
+            width: 100%; /* Ensure images take the full width of the column */
+            max-width: 500px; /* Limit the maximum width of images */
+            border-radius: 0.5rem; /* Optional: rounded corners for images */
+            object-fit: cover; /* Ensure images cover the area without distortion */
+        }
+
+        .text-center {
+            text-align: center; /* Center text */
+        }
+
+        /* Specific margin settings for each text tab */
+        .features25-tab-horizontal1 {
+            margin: 0 1rem 0; /* Only bottom margin */
+        }
+
+        .features25-tab-horizontal2 {
+            margin: 0 1rem; /* Left and right margins only */
+        }
+
+        .features25-tab-horizontal3 {
+            margin: 0 1rem 1rem; /* Left and right, bottom margin */
+        }
+
+        /* Style for selected tab */
+        .selected-tab {
+            font-weight: bold; /* Make text bold */
+            color: grey; /* Change text color to grey */
+        }
+    </style>
+
+    <div class="thq-section-padding">
+        <div class="features25-container2 thq-section-max-width">
+            <div class="row">
+                <div class="col-md-6 features25-tabs-menu text-center"> <!-- Center text -->
+                    <div class="features25-tab-horizontal1" onclick="showImage(0, this)">
+                        <div class="features25-content1" style="margin-top:3rem;">
+                            <h2 class="thq-heading-2">
+                                <span id="about" class="home-text30">Personalized Learning</span>
+                            </h2>
+                            <span class="thq-body-small">
+                                <span class="home-text33">
+                                    Tailored lessons for maximum engagement.
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="divider">-----------------------------------------------------</div> <!-- Divider line -->
+                    <div class="features25-tab-horizontal2" onclick="showImage(1, this)">
+                        <div class="features25-content2">
+                            <h2 class="thq-heading-2">
+                                <span class="home-text31">Engaging Conversations</span>
+                            </h2>
+                            <span class="thq-body-small">
+                                <span class="home-text34">
+                                    Interactive dialogues that build confidence.
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="divider">-----------------------------------------------------</div> <!-- Divider line -->
+                    <div class="features25-tab-horizontal3" onclick="showImage(2, this)">
+                        <div class="features25-content3">
+                            <h2 class="thq-heading-2">
+                                <span class="home-text32">Progress Tracking</span>
+                            </h2>
+                            <span class="thq-body-small">
+                                <span class="home-text35">
+                                    Real-time feedback to monitor improvements.
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 features25-image-container text-center"> <!-- Center images -->
+                    <img
+                        alt="Image depicting personalized learning"
+                        src="https://images.unsplash.com/photo-1602743297108-4c9061884285?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                        class="features25-image thq-img-ratio-16-9"
+                        style="display: block;" />
+                    <img
+                        alt="Image depicting engaging conversations"
+                        src="https://images.unsplash.com/photo-1611532736419-bfe35e04dd78?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1Mnw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                        class="features25-image thq-img-ratio-16-9"
+                        style="display: none;" />
+                    <img
+                        alt="Image depicting progress tracking"
+                        src="https://images.unsplash.com/photo-1707541348243-9138c0c91863?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                        class="features25-image thq-img-ratio-16-9"
+                        style="display: none;" />
+                </div>
             </div>
         </div>
     </div>
+</features25-wrapper>
+
+<script>
+  // Function to show the selected image and hide others, and update text styles
+  function showImage(index, element) {
+    const images = document.querySelectorAll('.features25-image-container img');
+    const tabs = document.querySelectorAll('.features25-tabs-menu > div');
+
+    images.forEach((img, idx) => {
+      img.style.display = (idx === index) ? 'block' : 'none'; // Show or hide based on index
+    });
+
+    tabs.forEach((tab) => {
+      tab.classList.remove('selected-tab'); // Remove style from all tabs
+    });
+    element.classList.add('selected-tab'); // Add style to the clicked tab
+  }
+
+  // Initial selection on page load
+  window.onload = function() {
+    showImage(0, document.querySelector('.features25-tab-horizontal1')); // Show the first image and style the first tab
+  };
+</script>
+
+<!-- Include Bootstrap JS for responsive components -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    </div><div id="features">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Shimmering Generous Mosquito</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+<style>:root {
+  --dl-size-size-large: 144px;
+  --dl-size-size-small: 48px;
+  --dl-size-size-medium: 96px;
+  --dl-size-size-xlarge: 192px;
+  --dl-size-size-xsmall: 16px;
+  --dl-space-space-unit: 16px;
+  --dl-size-size-xxlarge: 288px;
+  --dl-size-size-maxwidth: 1400px;
+  --dl-color-theme-accent1: #FFFFFF;
+  --dl-color-theme-accent2: #F5D1B0;
+  --dl-radius-radius-round: 50%;
+  --dl-color-theme-primary1: #BF4408;
+  --dl-color-theme-primary2: #E65103;
+  --dl-space-space-halfunit: 8px;
+  --dl-space-space-sixunits: 96px;
+  --dl-space-space-twounits: 32px;
+  --dl-radius-radius-radius2: 2px;
+  --dl-radius-radius-radius4: 4px;
+  --dl-radius-radius-radius8: 8px;
+  --dl-space-space-fiveunits: 80px;
+  --dl-space-space-fourunits: 64px;
+  --dl-color-theme-secondary1: #FFFFFF;
+  --dl-color-theme-secondary2: #FBF1EB;
+  --dl-space-space-threeunits: 48px;
+  --dl-color-theme-neutral-dark: #191818;
+  --dl-radius-radius-cardradius: 8px;
+  --dl-color-theme-neutral-light: #FBFAF9;
+  --dl-radius-radius-imageradius: 8px;
+  --dl-radius-radius-inputradius: 24px;
+  --dl-radius-radius-buttonradius: 24px;
+  --dl-space-space-oneandhalfunits: 24px;
+}
+.button {
+  color: var(--dl-color-theme-neutral-dark);
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: 4px;
+  background-color: var(--dl-color-theme-neutral-light);
+}
+.input {
+  color: var(--dl-color-theme-neutral-dark);
+  cursor: auto;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: 4px;
+  background-color: var(--dl-color-theme-neutral-light);
+}
+.textarea {
+  color: var(--dl-color-theme-neutral-dark);
+  cursor: auto;
+  padding: 0.5rem;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: 4px;
+  background-color: var(--dl-color-theme-neutral-light);
+}
+.list {
+  width: 100%;
+  margin: 1em 0px 1em 0px;
+  display: block;
+  padding: 0px 0px 0px 1.5rem;
+  list-style-type: none;
+  list-style-position: outside;
+}
+.list-item {
+  display: list-item;
+}
+.teleport-show {
+  display: flex !important;
+  transform: none !important;
+}
+.thq-input {
+  color: var(--dl-color-theme-neutral-dark);
+  cursor: auto;
+  outline: none;
+  padding: 0.5rem 1rem;
+  align-self: stretch;
+  text-align: center;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: var(--dl-radius-radius-inputradius);
+  background-color: var(--dl-color-theme-neutral-light);
+}
+.thq-input:focus {
+  outline: 1px solid var(--dl-color-theme-primary1);
+}
+.thq-button-filled {
+  gap: var(--dl-space-space-halfunit);
+  fill: var(--dl-color-theme-secondary1);
+  color: var(--dl-color-theme-secondary1);
+  cursor: pointer;
+  display: flex;
+  transition: 0.3s;
+  align-items: center;
+  font-weight: bold;
+  padding-top: var(--dl-space-space-halfunit);
+  white-space: nowrap;
+  border-color: var(--dl-color-theme-primary1);
+  border-width: 1px;
+  padding-left: var(--dl-space-space-oneandhalfunits);
+  border-radius: var(--dl-radius-radius-buttonradius);
+  padding-right: var(--dl-space-space-oneandhalfunits);
+  padding-bottom: var(--dl-space-space-halfunit);
+  justify-content: center;
+  background-color: var(--dl-color-theme-primary1);
+}
+.thq-button-filled:hover {
+  fill: var(--dl-color-theme-secondary2);
+  color: var(--dl-color-theme-secondary2);
+  border-color: var(--dl-color-theme-primary2);
+  background-color: var(--dl-color-theme-primary2);
+}
+.thq-button-outline {
+  gap: var(--dl-space-space-halfunit);
+  fill: var(--dl-color-theme-primary1);
+  color: var(--dl-color-theme-primary1);
+  border: 1px solid;
+  cursor: pointer;
+  display: flex;
+  transition: 0.3s;
+  align-items: center;
+  font-weight: bold;
+  padding-top: var(--dl-space-space-halfunit);
+  white-space: nowrap;
+  border-color: var(--dl-color-theme-primary1);
+  padding-left: var(--dl-space-space-oneandhalfunits);
+  border-radius: var(--dl-radius-radius-buttonradius);
+  padding-right: var(--dl-space-space-oneandhalfunits);
+  padding-bottom: var(--dl-space-space-halfunit);
+  justify-content: center;
+}
+.thq-button-outline:hover {
+  fill: var(--dl-color-theme-secondary2);
+  color: var(--dl-color-theme-secondary2);
+  border-color: var(--dl-color-theme-primary2);
+  background-color: var(--dl-color-theme-primary2);
+}
+.thq-button-flat {
+  gap: var(--dl-space-space-halfunit);
+  fill: var(--dl-color-theme-primary1);
+  color: var(--dl-color-theme-primary1);
+  cursor: pointer;
+  display: flex;
+  transition: 0.3s;
+  align-items: center;
+  font-weight: bold;
+  padding-top: var(--dl-space-space-halfunit);
+  white-space: nowrap;
+  border-color: transparent;
+  border-width: 1px;
+  padding-left: var(--dl-space-space-oneandhalfunits);
+  border-radius: var(--dl-radius-radius-buttonradius);
+  padding-right: var(--dl-space-space-oneandhalfunits);
+  padding-bottom: var(--dl-space-space-halfunit);
+  justify-content: center;
+}
+.thq-button-flat:hover {
+  fill: var(--dl-color-theme-secondary1);
+  color: var(--dl-color-theme-secondary1);
+  border-color: var(--dl-color-theme-primary2);
+  background-color: var(--dl-color-theme-primary2);
+}
+.thq-heading-1 {
+  font-size: 48px;
+  font-family: STIX Two Text;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.thq-heading-2 {
+  font-size: 35px;
+  font-family: STIX Two Text;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.thq-heading-3 {
+  font-size: 26px;
+  font-family: STIX Two Text;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.thq-body-large {
+  font-size: 18px;
+  font-family: Noto Sans;
+  line-height: 1.5;
+}
+.thq-body-small {
+  font-size: 16px;
+  font-family: Noto Sans;
+  line-height: 1.5;
+}
+.thq-team-image-round {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.thq-section-padding {
+  width: 100%;
+  display: flex;
+  padding: var(--dl-space-space-fiveunits);
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+}
+.thq-section-max-width {
+  width: 100%;
+  max-width: var(--dl-size-size-maxwidth);
+}
+.thq-img-ratio-1-1 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+  border-radius: var(--dl-radius-radius-imageradius);
+}
+.thq-img-ratio-16-9 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 16/9;
+  border-radius: var(--dl-radius-radius-imageradius);
+}
+.thq-img-ratio-4-3 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 4/3;
+  border-radius: var(--dl-radius-radius-imageradius);
+}
+.thq-img-ratio-4-6 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 4/6;
+  border-radius: var(--dl-radius-radius-imageradius);
+}
+.thq-img-round {
+  width: 100%;
+  border-radius: var(--dl-radius-radius-round);
+}
+.thq-flex-column {
+  gap: var(--dl-space-space-twounits);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+}
+.thq-flex-row {
+  gap: var(--dl-space-space-twounits);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+}
+.thq-grid-6 {
+  display: grid;
+  grid-gap: var(--dl-space-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+.thq-grid-5 {
+  display: grid;
+  grid-gap: var(--dl-space-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+.thq-card {
+  gap: var(--dl-space-space-oneandhalfunits);
+  display: flex;
+  padding: var(--dl-space-space-twounits);
+  align-items: stretch;
+  border-radius: var(--dl-radius-radius-cardradius);
+  flex-direction: column;
+}
+.thq-box-shadow {
+  box-shadow: 0px 0px 5px -2px var(--dl-color-theme-neutral-dark);
+}
+.thq-grid-3 {
+  display: grid;
+  grid-gap: var(--dl-space-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.thq-grid-4 {
+  display: grid;
+  grid-gap: var(--dl-space-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+.thq-grid-2 {
+  width: 100%;
+  display: grid;
+  grid-gap: var(--dl-space-space-twounits);
+  grid-template-columns: 1fr 1fr;
+}
+.thq-checkbox {
+  width: var(--dl-size-size-xsmall);
+  height: var(--dl-size-size-xsmall);
+}
+.thq-select {
+  cursor: pointer;
+  appearance: none;
+  padding-top: var(--dl-space-space-halfunit);
+  padding-left: var(--dl-space-space-unit);
+  border-radius: var(--dl-radius-radius-inputradius);
+  padding-right: var(--dl-space-space-twounits);
+  padding-bottom: var(--dl-space-space-halfunit);
+  background-color: var(--dl-color-theme-neutral-light);
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg width%3D%2220%22 height%3D%2220%22 xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 20 20%22 fill%3D%22%23000%22%3E%3Cpath d%3D%22M4.293 7.293a1 1 0 011.414 0L10 11.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z%22/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+.thq-divider-horizontal {
+  width: 100%;
+  height: 1px;
+  background-color: var(--dl-color-theme-neutral-dark);
+}
+.thq-icon-small {
+  width: 24px;
+  height: 24px;
+}
+.thq-button-icon {
+  fill: var(--dl-color-theme-secondary1);
+  padding: 3px;
+  transition: 0.3s;
+  border-radius: var(--dl-radius-radius-round);
+}
+.thq-button-icon:hover {
+  fill: var(--dl-color-theme-secondary2);
+}
+.thq-icon-medium {
+  width: var(--dl-size-size-small);
+  height: var(--dl-size-size-small);
+}
+.thq-icon-x-small {
+  width: var(--dl-size-size-xsmall);
+  height: var(--dl-size-size-xsmall);
+}
+.thq-link {
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  background: linear-gradient(to right, var(--dl-color-theme-primary1) 50%, var(--dl-color-theme-neutral-dark) 50%);
+  transition: background-position 300ms ease;
+  font-weight: 600;
+  background-clip: text;
+  background-size: 200% 100%;
+  background-position: 100%;
+  -webkit-text-fill-color: transparent;
+}
+.thq-link:hover {
+  background-position: 0 100%;
+}
+.thq-grid-auto-300 {
+  display: grid;
+  grid-gap: var(--dl-space-space-oneandhalfunits);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+.thq-animated-group-vertical-reverse {
+  gap: var(--dl-space-space-unit);
+  width: 100%;
+  display: flex;
+  animation: scroll-y 20s linear infinite;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-around;
+  animation-direction: reverse;
+}
+.thq-animated-group-horizontal-reverse {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  animation: scroll-x 20s linear infinite;
+  min-width: 100%;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-around;
+  animation-direction: reverse;
+}
+.thq-animated-group-vertical {
+  gap: var(--dl-space-space-unit);
+  width: 100%;
+  display: flex;
+  animation: scroll-y 20s linear infinite;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.thq-animated-group-horizontal {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  animation: scroll-x 20s linear infinite;
+  min-width: 100%;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-around;
+}
+.thq-animated-group-container-vertical {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+.thq-animated-group-container-horizontal {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  overflow: hidden;
+}
+.thq-mask-image-vertical {
+  mask-image: linear-gradient(to bottom, transparent, black 1%, black 99%, transparent);
+}
+.thq-mask-image-horizontal {
+  mask-image: linear-gradient(to right, transparent, black 1%, black 99%, transparent);
+}
+.thq-img-scale {
+  transition: 0.3s;
+}
+.thq-img-scale:hover {
+  scale: 1.05;
+}
+.thq-animated-card-bg-1 {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s;
+  border-radius: var(--dl-radius-radius-cardradius);
+  background-color: var(--dl-color-theme-accent1);
+}
+.thq-animated-card-bg-2 {
+  transition: transform 0.3s;
+  border-radius: var(--dl-radius-radius-cardradius);
+  background-color: var(--dl-color-theme-accent2);
+}
+.thq-button-animated {
+  outline: none;
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+  border-width: 2px;
+}
+.thq-input::placeholder {
+  text-align: center;
+  vertical-align: middle;
+}
+.thq-animated-group-container-vertical:hover div {
+  animation-play-state: paused;
+}
+.thq-animated-group-container-horizontal:hover div {
+  animation-play-state: paused;
+}
+.thq-animated-card-bg-2:has([data-animated="true"]:hover) {
+  transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(3deg) skew(0deg, 0deg);
+}
+.thq-animated-card-bg-1:has([data-animated="true"]:hover) {
+  transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-6deg) skew(0deg, 0deg);
+}
+.thq-button-animated:before {
+  top: 0;
+  left: -20%;
+  color: var(--dl-color-theme-neutral-light);
+  width: 200%;
+  height: 101%;
+  content: "";
+  z-index: 1;
+  position: absolute;
+  transform: scaleX(0);
+  transition: transform 0.5s;
+  border-radius: var(--dl-radius-radius-buttonradius);
+  background-color: var(--dl-color-theme-neutral-dark);
+  transform-origin: 0 0;
+  transition-timing-function: cubic-bezier(0.5, 1.6, 0.4, 0.7);
+}
+.thq-button-animated:hover::before {
+  color: var(--dl-color-theme-neutral-light);
+  z-index: -1;
+  transform: scaleX(1);
+}
+.Content {
+  font-size: 16px;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: 1.15;
+  text-transform: none;
+  text-decoration: none;
+}
+@media(max-width: 991px) {
+  .thq-grid-4 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+@media(max-width: 767px) {
+  .thq-section-padding {
+    padding: var(--dl-space-space-threeunits);
+  }
+  .thq-flex-column {
+    gap: var(--dl-space-space-oneandhalfunits);
+  }
+  .thq-flex-row {
+    gap: var(--dl-space-space-oneandhalfunits);
+  }
+  .thq-grid-6 {
+    grid-gap: var(--dl-space-space-oneandhalfunits);
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .thq-grid-5 {
+    grid-gap: var(--dl-space-space-oneandhalfunits);
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .thq-card {
+    padding: var(--dl-space-space-oneandhalfunits);
+  }
+  .thq-grid-3 {
+    grid-gap: var(--dl-space-space-oneandhalfunits);
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-4 {
+    grid-gap: var(--dl-space-space-oneandhalfunits);
+    flex-direction: row;
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-2 {
+    grid-gap: var(--dl-space-space-oneandhalfunits);
+    grid-template-columns: 1fr;
+  }
+  .thq-img-scale {
+    width: 100%;
+  }
+}
+@media(max-width: 479px) {
+  .thq-section-padding {
+    padding: var(--dl-space-space-oneandhalfunits);
+  }
+  .thq-flex-column {
+    gap: var(--dl-space-space-unit);
+  }
+  .thq-flex-row {
+    gap: var(--dl-space-space-unit);
+  }
+  .thq-grid-6 {
+    grid-gap: var(--dl-space-space-unit);
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-5 {
+    grid-gap: var(--dl-space-space-unit);
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-3 {
+    grid-gap: var(--dl-space-space-unit);
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+  .thq-grid-4 {
+    grid-gap: var(--dl-space-space-unit);
+    align-items: center;
+    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+  .thq-grid-2 {
+    grid-gap: var(--dl-space-space-unit);
+  }
+  .thq-grid-auto-300 {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+    <style data-tag="reset-style-sheet">
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: Inter;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style:normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: var(--dl-color-theme-neutral-dark);
+        background: var(--dl-color-theme-neutral-light);
+
+        fill: var(--dl-color-theme-neutral-dark);
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/animate.css@4.1.1/animate.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
+    />
+<style>.steps2-container1 {
+  width: 100%;
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.steps2-max-width {
+  gap: var(--dl-space-space-fourunits);
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+}
+.steps2-container2 {
+  align-items: start;
+}
+.steps2-section-header {
+  gap: var(--dl-space-space-oneandhalfunits);
+  top: 10%;
+  display: flex;
+  position: sticky;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.steps2-actions {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  align-items: flex-start;
+}
+.steps2-container3 {
+  grid-area: span 1/span 1/span 1/span 1;
+}
+.steps2-container4 {
+  top: 10%;
+  position: sticky;
+  transform: rotate(-2deg);
+  margin-bottom: var(--dl-space-space-twounits);
+  background-color: var(--dl-color-theme-accent1);
+}
+.steps2-text14 {
+  text-align: center;
+}
+.steps2-text15 {
+  top: var(--dl-space-space-unit);
+  right: var(--dl-space-space-unit);
+  position: absolute;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+}
+.steps2-container5 {
+  top: 10%;
+  position: sticky;
+  transform: rotate(2deg);
+  margin-bottom: var(--dl-space-space-twounits);
+  background-color: var(--dl-color-theme-accent2);
+}
+.steps2-text17 {
+  text-align: center;
+}
+.steps2-text18 {
+  top: var(--dl-space-space-unit);
+  right: var(--dl-space-space-unit);
+  position: absolute;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+}
+.steps2-container6 {
+  top: 10%;
+  position: sticky;
+  transform: rotate(-2deg);
+  margin-bottom: var(--dl-space-space-twounits);
+  background-color: var(--dl-color-theme-accent1);
+}
+.steps2-text20 {
+  text-align: center;
+}
+.steps2-text21 {
+  top: var(--dl-space-space-unit);
+  right: var(--dl-space-space-unit);
+  position: absolute;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+}
+.steps2-container7 {
+  top: 10%;
+  position: sticky;
+  transform: rotate(2deg);
+  background-color: var(--dl-color-theme-accent2);
+}
+.steps2-text23 {
+  text-align: center;
+}
+.steps2-text24 {
+  top: var(--dl-space-space-unit);
+  right: var(--dl-space-space-unit);
+  position: absolute;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+}
+.steps2-fragment1 {
+  display: contents;
+}
+.steps2-text25 {
+  display: inline-block;
+}
+.steps2-fragment2 {
+  display: contents;
+}
+.steps2-text26 {
+  display: inline-block;
+}
+.steps2-fragment3 {
+  display: contents;
+}
+.steps2-text27 {
+  display: inline-block;
+}
+.steps2-fragment4 {
+  display: contents;
+}
+.steps2-text28 {
+  display: inline-block;
+}
+.steps2-fragment5 {
+  display: contents;
+}
+.steps2-text29 {
+  display: inline-block;
+}
+.steps2-fragment6 {
+  display: contents;
+}
+.steps2-text30 {
+  display: inline-block;
+}
+.steps2-fragment7 {
+  display: contents;
+}
+.steps2-text31 {
+  display: inline-block;
+}
+.steps2-fragment8 {
+  display: contents;
+}
+.steps2-text32 {
+  display: inline-block;
+}
+@media(max-width: 991px) {
+  .steps2-max-width {
+    flex-direction: column;
+  }
+}
+@media(max-width: 767px) {
+  .steps2-section-header {
+    position: static;
+    margin-bottom: var(--dl-space-space-twounits);
+  }
+  .steps2-actions {
+    width: 100%;
+    align-self: flex-start;
+  }
+  .steps2-container4 {
+    width: 100%;
+  }
+  .steps2-container5 {
+    width: 100%;
+  }
+  .steps2-container6 {
+    width: 100%;
+  }
+  .steps2-container7 {
+    width: 100%;
+  }
+}
+@media(max-width: 479px) {
+  .steps2-button {
+    width: 100%;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div>
+            <div class="steps2-container1 thq-section-padding">
+        <div class="steps2-max-width thq-section-max-width">
+          <div class="steps2-container2 thq-grid-2">
+            <div class="steps2-section-header">
+              <h4 class="thq-heading-2">Discover the Power of Our Products</h4>
+             <p class="thq-body-large">
+  Letstea is your go-to platform for mastering English with the help of advanced AI technology. Our personalized learning approach adapts to your unique needs, ensuring engaging lessons that enhance your speaking, writing, and comprehension skills. Whether you're a beginner or looking to refine your abilities, Letstea offers interactive exercises and real-time feedback to guide your journey toward fluency.
+</p>
+              <div class="steps2-actions">
+                <a style="margin-left:9rem;" href="{{ url_for('login') }}"
+                  class="thq-button-animated thq-button-filled steps2-button"
+                >
+                  <span class="thq-body-small"> start learning</span>
+                </a>
+              </div>
+            </div>
+            <div class="steps2-container3">
+              <div class="steps2-container4 thq-card">
+                <h2 class="thq-heading-2">
+                  <fragment class="steps2-fragment7">
+                    <span class="steps2-text31">Sign Up</span>
+                  </fragment>
+                </h2>
+                <span class="steps2-text14 thq-body-small">
+                  <fragment class="steps2-fragment1">
+                    <span class="steps2-text25">
+                      Create an account on LETSTEA to access personalized
+                      English lessons.
+                    </span>
+                  </fragment>
+                </span>
+                <label class="steps2-text15 thq-heading-3">01</label>
+              </div>
+              <div class="steps2-container5 thq-card">
+                <h2 class="thq-heading-2">
+                  <fragment class="steps2-fragment5">
+                    <span class="steps2-text29">Choose Interests</span>
+                  </fragment>
+                </h2>
+                <span class="steps2-text17 thq-body-small">
+                  <fragment class="steps2-fragment8">
+                    <span class="steps2-text32">
+                      Select topics that interest you to tailor the lessons to
+                      your preferences.
+                    </span>
+                  </fragment>
+                </span>
+                <label class="steps2-text18 thq-heading-3">02</label>
+              </div>
+              <div class="steps2-container6 thq-card">
+                <h2 class="thq-heading-2">
+                  <fragment class="steps2-fragment4">
+                    <span class="steps2-text28">Engage in Conversations</span>
+                  </fragment>
+                </h2>
+                <span class="steps2-text20 thq-body-small">
+                  <fragment class="steps2-fragment2">
+                    <span class="steps2-text26">
+                      Participate in interactive dialogues to practice English
+                      in real-life scenarios.
+                    </span>
+                  </fragment>
+                </span>
+                <label class="steps2-text21 thq-heading-3">03</label>
+              </div>
+              <div class="steps2-container7 thq-card">
+                <h2 class="thq-heading-2">
+                  <fragment class="steps2-fragment3">
+                    <span class="steps2-text27">Track Progress</span>
+                  </fragment>
+                </h2>
+                <span class="steps2-text23 thq-body-small">
+                  <fragment class="steps2-fragment6">
+                    <span class="steps2-text30">
+                      Receive real-time feedback and monitor your improvements
+                      as you master English.
+                    </span>
+                  </fragment>
+                </span>
+                <label class="steps2-text24 thq-heading-3">04</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      defer=""
+      src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
+    ></script>
+  </body>
+</html>
 
 
-        <div class="input-group" >
-        <input
-            type="text"
-            id="message-input"
-            placeholder="Type your message here..."
-        />
-            <button id="action-button"><i style='font-size:20px' class='fas fa-microphone'></i></button></div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Shimmering Generous Mosquito</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: Inter;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style:normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: var(--dl-color-theme-neutral-dark);
+        background: var(--dl-color-theme-neutral-light);
+
+        fill: var(--dl-color-theme-neutral-dark);
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/animate.css@4.1.1/animate.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
+    />
+<style>.testimonial17-max-width {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.testimonial17-container10 {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  max-width: 600px;
+  align-items: center;
+  margin-bottom: var(--dl-space-space-fourunits);
+  flex-direction: column;
+}
+.testimonial17-text11 {
+  text-align: center;
+}
+.testimonial17-container12 {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+.testimonial17-image1 {
+  width: var(--dl-size-size-small);
+  height: var(--dl-size-size-small);
+  object-fit: cover;
+  border-radius: var(--dl-radius-radius-round);
+}
+.testimonial17-container13 {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.testimonial17-text14 {
+  text-align: left;
+}
+.testimonial17-container14 {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+.testimonial17-image2 {
+  width: var(--dl-size-size-small);
+  height: var(--dl-size-size-small);
+  object-fit: cover;
+  border-radius: var(--dl-radius-radius-round);
+}
+.testimonial17-container15 {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.testimonial17-text17 {
+  text-align: left;
+}
+.testimonial17-container16 {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+.testimonial17-image3 {
+  width: var(--dl-size-size-small);
+  height: var(--dl-size-size-small);
+  object-fit: cover;
+  border-radius: var(--dl-radius-radius-round);
+}
+.testimonial17-container17 {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.testimonial17-text20 {
+  text-align: left;
+}
+.testimonial17-container18 {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+.testimonial17-image4 {
+  width: var(--dl-size-size-small);
+  height: var(--dl-size-size-small);
+  object-fit: cover;
+  border-radius: var(--dl-radius-radius-round);
+}
+.testimonial17-container19 {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.testimonial17-text23 {
+  text-align: left;
+}
+.testimonial17-fragment10 {
+  display: contents;
+}
+.testimonial17-text24 {
+  display: inline-block;
+}
+.testimonial17-fragment11 {
+  display: contents;
+}
+.testimonial17-text25 {
+  display: inline-block;
+}
+.testimonial17-fragment12 {
+  display: contents;
+}
+.testimonial17-text26 {
+  display: inline-block;
+}
+.testimonial17-fragment13 {
+  display: contents;
+}
+.testimonial17-text27 {
+  display: inline-block;
+}
+.testimonial17-fragment14 {
+  display: contents;
+}
+.testimonial17-text28 {
+  display: inline-block;
+}
+.testimonial17-fragment15 {
+  display: contents;
+}
+.testimonial17-text29 {
+  display: inline-block;
+}
+.testimonial17-fragment16 {
+  display: contents;
+}
+.testimonial17-text30 {
+  display: inline-block;
+}
+.testimonial17-fragment17 {
+  display: contents;
+}
+.testimonial17-text31 {
+  display: inline-block;
+}
+.testimonial17-fragment18 {
+  display: contents;
+}
+.testimonial17-text32 {
+  display: inline-block;
+}
+.testimonial17-fragment19 {
+  display: contents;
+}
+.testimonial17-text33 {
+  display: inline-block;
+}
+.testimonial17-fragment20 {
+  display: contents;
+}
+.testimonial17-text34 {
+  display: inline-block;
+}
+.testimonial17-fragment21 {
+  display: contents;
+}
+.testimonial17-text35 {
+  display: inline-block;
+}
+.testimonial17-fragment22 {
+  display: contents;
+}
+.testimonial17-text36 {
+  display: inline-block;
+}
+.testimonial17-fragment23 {
+  display: contents;
+}
+.testimonial17-text37 {
+  display: inline-block;
+}
+@media(max-width: 991px) {
+  .testimonial17-container10 {
+    margin-bottom: var(--dl-space-space-threeunits);
+  }
+}
+@media(max-width: 767px) {
+  .testimonial17-container10 {
+    margin-bottom: var(--dl-space-space-oneandhalfunits);
+  }
+  .testimonial17-card1 {
+    width: 100%;
+  }
+  .testimonial17-card2 {
+    width: 100%;
+  }
+  .testimonial17-card3 {
+    width: 100%;
+  }
+  .testimonial17-card4 {
+    width: 100%;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div>
+      <div class="thq-section-padding">
+        <div class="testimonial17-max-width thq-section-max-width">
+          <div class="testimonial17-container10">
+            <h2 class="thq-heading-2">
+              <fragment class="testimonial17-fragment19">
+                <span class="testimonial17-text33">What Our Users Say</span>
+              </fragment>
+            </h2>
+            <span class="testimonial17-text11 thq-body-small">
+              <fragment class="testimonial17-fragment11">
+                <span class="testimonial17-text25">
+                  LETSTEA has transformed the way I learn English. The
+                  personalized lessons and engaging conversations have boosted
+                  my confidence significantly.
+                </span>
+              </fragment>
+            </span>
+          </div>
+          <div class="thq-grid-2">
+            <div class="thq-animated-card-bg-2">
+              <div class="thq-animated-card-bg-1">
+                <div data-animated="true" class="thq-card testimonial17-card1">
+                  <div class="testimonial17-container12">
+                    <img
+                      alt="Image of Sophia Johnson"
+                      src="https://images.unsplash.com/photo-1519593552800-5525cdd7c6f2?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM0OXw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                      class="testimonial17-image1"
+                    />
+                    <div class="testimonial17-container13">
+                      <strong class="thq-body-large">
+                        <fragment class="testimonial17-fragment15">
+                          <span class="testimonial17-text29">
+                            Sophia Johnson
+                          </span>
+                        </fragment>
+                      </strong>
+                      <span class="thq-body-small">
+                        <fragment class="testimonial17-fragment16">
+                          <span class="testimonial17-text30">
+                            Marketing Manager
+                          </span>
+                        </fragment>
+                      </span>
+                    </div>
+                  </div>
+                  <span class="testimonial17-text14 thq-body-small">
+                    <fragment class="testimonial17-fragment18">
+                     <span class="testimonial17-text32"> "Letstea transformed my English learning experience! The AI-driven platform tailored lessons to my needs, making each session engaging and effective. With personalized feedback and interactive exercises, I’ve improved my skills in no time. Highly recommend it for anyone looking to enhance their English!" </span>
+                    </fragment>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="thq-animated-card-bg-2">
+              <div class="thq-animated-card-bg-1">
+                <div data-animated="true" class="thq-card testimonial17-card2">
+                  <div class="testimonial17-container14">
+                    <img
+                      alt="Image of David Lee"
+                      src="https://images.unsplash.com/photo-1502768040783-423da5fd5fa0?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                      class="testimonial17-image2"
+                    />
+                    <div class="testimonial17-container15">
+                      <strong class="thq-body-large">
+                        <fragment class="testimonial17-fragment20">
+                          <span class="testimonial17-text34">David Lee</span>
+                        </fragment>
+                      </strong>
+                      <span class="thq-body-small">
+                        <fragment class="testimonial17-fragment17">
+                          <span class="testimonial17-text31">
+                            Software Engineer
+                          </span>
+                        </fragment>
+                      </span>
+                    </div>
+                  </div>
+                  <span class="testimonial17-text17 thq-body-small">
+                    <fragment class="testimonial17-fragment22">
+                      <span class="testimonial17-text36">
+                        I never thought learning English could be this fun! The
+                        interactive dialogues are so immersive, and I can see a
+                        clear improvement in my language skills.
+                      </span>
+                    </fragment>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="thq-animated-card-bg-2">
+              <div class="thq-animated-card-bg-1">
+                <div data-animated="true" class="thq-card testimonial17-card3">
+                  <div class="testimonial17-container16">
+                    <img
+                      alt="Image of Emily Chen"
+                      src="https://images.unsplash.com/photo-1654110455429-cf322b40a906?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                      class="testimonial17-image3"
+                    />
+                    <div class="testimonial17-container17">
+                      <strong class="thq-body-large">
+                        <fragment class="testimonial17-fragment10">
+                          <span class="testimonial17-text24">Emily Chen</span>
+                        </fragment>
+                      </strong>
+                      <span class="thq-body-small">
+                        <fragment class="testimonial17-fragment23">
+                          <span class="testimonial17-text37">Student</span>
+                        </fragment>
+                      </span>
+                    </div>
+                  </div>
+                  <span class="testimonial17-text20 thq-body-small">
+                    <fragment class="testimonial17-fragment14">
+                      <span class="testimonial17-text28">
+                        As a student, LETSTEA has been a game-changer for
+                        me. The progress tracking feature helps me stay
+                        motivated and focused on improving my English
+                        proficiency.
+                      </span>
+                    </fragment>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="thq-animated-card-bg-2">
+              <div class="thq-animated-card-bg-1">
+                <div data-animated="true" class="thq-card testimonial17-card4">
+                  <div class="testimonial17-container18">
+                    <img
+                      alt="Image of Michael Rodriguez"
+                      src="https://images.unsplash.com/photo-1484191025110-4043236d4cdf?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                      class="testimonial17-image4"
+                    />
+                    <div class="testimonial17-container19">
+                      <strong class="thq-body-large">
+                        <fragment class="testimonial17-fragment12">
+                          <span class="testimonial17-text26">
+                            Michael Rodriguez
+                          </span>
+                        </fragment>
+                      </strong>
+                      <span class="thq-body-small">
+                        <fragment class="testimonial17-fragment13">
+                          <span class="testimonial17-text27">
+                            Business Owner
+                          </span>
+                        </fragment>
+                      </span>
+                    </div>
+                  </div>
+                  <span class="testimonial17-text23 thq-body-small">
+                    <fragment class="testimonial17-fragment21">
+                      <span class="testimonial17-text35">
+                        I highly recommend LETSTEA to anyone looking to
+                        master English. The personalized learning approach makes
+                        the whole experience enjoyable and effective.
+                      </span>
+                    </fragment>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      defer=""
+      src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
+    ></script>
+  </body>
+</html>
+    </div>
 
 
-    <div class="toast" id="toast">Couldn't understand, please try again.</div>
+
+<div id = "contactus">
+    <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Shimmering Generous Mosquito</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta property="twitter:card" content="summary_large_image" />
+
+    <style data-tag="reset-style-sheet">
+      html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
+    </style>
+    <style data-tag="default-style-sheet">
+      html {
+        font-family: Inter;
+        font-size: 16px;
+      }
+
+      body {
+        font-weight: 400;
+        font-style:normal;
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: normal;
+        line-height: 1.15;
+        color: var(--dl-color-theme-neutral-dark);
+        background: var(--dl-color-theme-neutral-light);
+
+        fill: var(--dl-color-theme-neutral-dark);
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/animate.css@4.1.1/animate.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
+      data-tag="font"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
+    />
+<style>.contact10-container1 {
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.contact10-max-width {
+  align-self: center;
+}
+.contact10-content1 {
+  width: 100%;
+  margin-bottom: var(--dl-space-space-threeunits);
+  justify-content: flex-start;
+}
+.contact10-content2 {
+  gap: var(--dl-space-space-unit);
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.contact10-content3 {
+  width: 100%;
+  align-items: flex-start;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.contact10-container2 {
+  gap: var(--dl-space-space-oneandhalfunits);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.contact10-image1 {
+  object-fit: cover;
+}
+.contact10-text12 {
+  text-align: center;
+}
+.contact10-container3 {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.contact10-container4 {
+  gap: var(--dl-space-space-oneandhalfunits);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.contact10-image2 {
+  object-fit: cover;
+}
+.contact10-text14 {
+  text-align: center;
+}
+.contact10-container5 {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.contact10-fragment1 {
+  display: contents;
+}
+.contact10-text16 {
+  display: inline-block;
+}
+.contact10-fragment2 {
+  display: contents;
+}
+.contact10-text17 {
+  display: inline-block;
+}
+.contact10-fragment3 {
+  display: contents;
+}
+.contact10-text18 {
+  display: inline-block;
+}
+.contact10-fragment4 {
+  display: contents;
+}
+.contact10-text19 {
+  display: inline-block;
+}
+.contact10-fragment5 {
+  display: contents;
+}
+.contact10-text20 {
+  display: inline-block;
+}
+.contact10-fragment6 {
+  display: contents;
+}
+.contact10-text21 {
+  display: inline-block;
+}
+@media(max-width: 991px) {
+  .contact10-content1 {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .contact10-content3 {
+    position: relative;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+@media(max-width: 767px) {
+  .contact10-content1 {
+    gap: var(--dl-space-space-oneandhalfunits);
+  }
+  .contact10-image1 {
+    width: 100%;
+  }
+  .contact10-image2 {
+    width: 100%;
+  }
+}
+</style>
+  </head>
+  <body>
+    <div>
+      <div class="contact10-container1 thq-section-padding">
+        <div class="contact10-max-width thq-section-max-width">
+          <div class="contact10-content1 thq-flex-row">
+            <div class="contact10-content2">
+              <h2 class="thq-heading-2">
+                <fragment class="contact10-fragment3">
+                  <span class="contact10-text18">Contact Us</span>
+                </fragment>
+              </h2>
+              <p class="thq-body-large">
+                <fragment class="contact10-fragment6">
+                  <span class="contact10-text21">
+                    Have a question or feedback? Reach out to us!
+                  </span>
+                </fragment>
+              </p>
+            </div>
+          </div>
+          <div class="contact10-content3 thq-flex-row">
+            <div class="contact10-container2">
+              <img style="max-width:500px;"
+                alt="Email Icon"
+                src="https://images.unsplash.com/photo-1654369024946-29489bcbc2d7?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyODU2NjM1MHw&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=1080"
+                class="contact10-image1 thq-img-ratio-16-9"
+              />
+              <h3 class="contact10-text12 thq-heading-3">
+                <fragment class="contact10-fragment1">
+                  <span class="contact10-text16">Email: info@letstea.tech</span>
+                </fragment>
+              </h3>
+              <p class="thq-body-large">
+                <fragment class="contact10-fragment2">
+                  <span class="contact10-text17">
+                    Send us an email and we'll get back to you as soon as
+                    possible.
+                  </span>
+                </fragment>
+              </p>
+            </div>
+      </div>
+    </div>
+    <script
+      defer=""
+      src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
+    ></script>
+  </body>
+</html>
+</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script>
+        const toggleMenu = document.getElementById('toggleMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        toggleMenu.addEventListener('click', () => {
+            menuOverlay.style.display = menuOverlay.style.display === 'block' ? 'none' : 'block';
+        });
+
+        menuOverlay.addEventListener('click', () => {
+            menuOverlay.style.display = 'none';
+        });
+    </script>
+<footer style="background-color: #272726; color: #B0A9A0; padding: 40px 0; text-align: center;">
+    <div class="container-fluid">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <p style="margin: 0; font-size: 1rem;">&copy; 2024 LetsTea. All rights reserved.</p>
+            <div class="social-icons" style="margin-top: 15px; display: flex; justify-content: center;">
+                <a href="#" style="color: #B0A9A0; margin: 0 15px; text-decoration: none;">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" style="color: #B0A9A0; margin: 0 15px; text-decoration: none;">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" style="color: #B0A9A0; margin: 0 15px; text-decoration: none;">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" style="color: #B0A9A0; margin: 0 15px; text-decoration: none;">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+            </div>
+            <div style="margin-top: 15px; font-size: 0.9rem;">
+                <a href="#" style="color: #B0A9A0; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+                <span style="color: #B0A9A0;">|</span>
+                <a href="#" style="color: #B0A9A0; text-decoration: none; margin: 0 10px;">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
 </body>
+
 </html>

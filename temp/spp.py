@@ -1,31 +1,48 @@
-import base64
-import json
-from flask import Flask, render_template, request
 from groq import Groq
 
-app = Flask(__name__)
+# Initialize the client
 client = Groq()
 
+# Set up conversation parameters
+model_name = "llama-3.1-8b-instant"
+temperature = .1
+max_tokens = 1024
+top_p = 1
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Initialize the conversation history
+messages = []
 
+print("Chatbot: Hello! How can I assist you today? Type 'exit' to end the conversation.")
 
-@app.route('/record-audio', methods=['POST'])
-def record_audio():
-    audio_data = request.json['audioData']
-    audio_binary = base64.b64decode(audio_data.split(',')[1])  # Decode the base64 audio data
+while True:
+    # Get user input
+    user_input = input("You: ")
+    if user_input.lower() == 'exit':
+        print("Chatbot: Goodbye! Have a great day!")
+        break
 
-    # Use Groq for audio transcription
-    transcription = client.audio.transcriptions.create(
-        file=("audio.wav", audio_binary),
-        model="whisper-large-v3-turbo",
-        response_format="verbose_json"
+    # Add user message to conversation history
+    messages.append({"role": "user", "content": user_input})
+
+    # Generate response from the model
+    completion = client.chat.completions.create(
+        model=model_name,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        top_p=top_p,
+        stream=True,
+        stop=None,
     )
 
-    return json.dumps({'text': transcription.text}), 200, {'Content-Type': 'application/json'}
+    # Print the chatbot's response
+    print("Chatbot: ", end="")
+    for chunk in completion:
+        # Get the content of each chunk and print it
+        print(chunk.choices[0].delta.content or "", end="")
 
+    # Add chatbot's response to conversation history
+    bot_response = "".join([chunk.choices[0].delta.content or "" for chunk in completion])
+    messages.append({"role": "assistant", "content": bot_response})
 
-if __name__ == '__main__':
-    app.run(port=5000, host='0.0.0.0')
+    print("\n")  # New line for readability between conversation turns

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(33, 33, 33);
+            color: rgb(255, 255, 255);
+            overflow: hidden;
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+        }
+        .head {
+        padding:1rem;
+        width:90%;
+            height: 20vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            font-size: 1rem; /* Increase font size for visibility */
+        }
+        .container {
+            height: 70vh;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+        }
+        textarea {
+            width: 100%; /* Full width of the container */
+            height: 60vh; /* Fixed height */
+            margin-bottom: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: rgb(57, 57, 57);
+            color: rgb(255, 255, 255);
+            resize: none; /* Prevent resizing */
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+        }
+        /* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+        textarea::-webkit-scrollbar {
+            display: none; /* Hide scrollbar */
+        }
+        .buttoncss {
+            width: 10%; /* Adjust button width */
+            border: none;
+            border-radius: 5px;
+            background-color: rgb(225, 225, 255);
+            color: black;
+            cursor: pointer;
+            padding: 10px; /* Add some padding for better appearance */
+            margin-bottom: 1rem;
+            margin-left: 90%; /* Align button to the right */
+            display: flex;
+            justify-content: center;
+        }
+        .buttoncss:hover {
+            background-color: black;
+            color: white;
+        }
+        .toast {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="head" id="head-div">{{ topic}}</div>
+
+<div class="container">
+    <textarea id="user-input" placeholder="Type your essay here..."></textarea>
+    <button id="submit-button" class="buttoncss">Submit</button>
+</div>
+
+<div class="toast" id="toast">Action performed successfully!</div>
+<script>
+    const userData = JSON.parse(sessionStorage.getItem('userdata'));
+    const userName = sessionStorage.getItem('username');
+    console.log(userData)
+
+    // Show toast notification function
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000); // Hide after 3 seconds
+    }
+
+    // Add event listener for the submit button
+    document.getElementById('submit-button').addEventListener('click', () => {
+        const userInput = document.getElementById('user-input').value;
+        if (userInput) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/proficiency_test_cal'; // The endpoint to which you want to submit the data
+            const userDataInput = document.createElement('input');
+            userDataInput.type = 'hidden';
+            userDataInput.name = 'user_data'; // Use the same name expected by Flask
+            userDataInput.value = JSON.stringify(userData); // Stringify if it's an object
+            form.appendChild(userDataInput);
+            const essayInput = document.createElement('input');
+            essayInput.type = 'hidden';
+            essayInput.name = 'essay'; // Use the same name expected by Flask
+            essayInput.value = userInput; // The essay text
+            form.appendChild(essayInput);
+            const usernameInput = document.createElement('input');
+            usernameInput.type = 'hidden';
+            usernameInput.name = 'username'; // Use the same name expected by Flask
+            usernameInput.value = userName; // The username
+            form.appendChild(usernameInput);
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            showToast("Please enter your essay before submitting.");
+        }
+    });
+</script>
+
+</body>
+</html>

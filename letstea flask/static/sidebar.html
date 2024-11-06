@@ -12,7 +12,7 @@
             flex-direction: column;
             height: 100vh; /* Full viewport height */
             margin: 0;
-            background-color: rgb(33, 33, 33);
+            background-color: rgb(23,23,23);
             color: rgb(255, 255, 255);
             box-sizing: border-box;
         }
@@ -27,12 +27,12 @@
 
         .sidebar {
             width: 100%;
-            background-color: #222;
+            background-color: rgb(23,23,23);
             position: fixed;
             height: 100vh;
             display: flex;
             flex-direction: column;
-padding: 0 0 0 1rem;
+padding: 0 1rem 0 1rem;
         }
 
         .sidebar::-webkit-scrollbar {
@@ -59,58 +59,58 @@ padding: 0 0 0 1rem;
         }
 
         .topic {
-            background-color: #333;
+            background-color: rgb(23,23,23);
             color: white;
             padding: 15px;
             border-radius: 4px;
             margin-bottom: 10px;
             transition: background-color 0.3s, transform 0.3s;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+
         }
 
         .topic.selected {
-            background-color: white;
-            color: black;
+            background-color: rgb(66,66,66);
+
+        }
+         .topic.selected:hover{
+            background-color: rgb(66,66,66);
+
         }
 
         .topic:hover {
-            background-color: #555;
+            background-color: rgb(43,43,43);
         }
     </style>
 </head>
 <body>
-
     <div id="sidebar" class="sidebar">
      <div id="topic-list">
                 <!-- Topics will be displayed here -->
             </div>
     </div>
-
     <h2 id="selected-topic-name" style="display: none;">Selected Topic: </h2>
     <p id="selected-topic-desc" style="display: none;">Description: </p>
     <p id="selected-topic-index" style="display: none;">Index: </p>
 
     <script>
         const level = "B2";
-        const indexToScroll = 59;
+       const indexToScroll = 66;
         let currentSelectedTopic = null;
 
-        fetch('static/topics.json')
+        fetch('topics.json')
             .then(response => response.json())
             .then(data => {
                 const topics = data["Technical English"][level];
                 populateTopics(topics);
             })
             .catch(error => console.error('Error loading JSON:', error));
-
         function updateVariable(topicName, topicDesc, index) {
-            localStorage.setItem('sharedTopic', topicName);
-            localStorage.setItem('sharedDesc', topicDesc);
-            localStorage.setItem('sharedIndex', index);
-            window.dispatchEvent(new Event('storage'));
+        localStorage.setItem('sharedTopic', topicName);
+        localStorage.setItem('sharedDesc', topicDesc);
+        localStorage.setItem('sharedIndex', index);
+        window.dispatchEvent(new Event('storage'));
         }
-
         function populateTopics(topics) {
             const topicList = document.getElementById('topic-list');
             topicList.innerHTML = '';
