@@ -163,7 +163,8 @@ Persona: A brief description of the user's character, key personality traits, an
 Objective:
 Based on the provided user data, generate a fictional persona that includes the following:
 
-Full Name: A distinct but relatable name that fits the user’s culture and location.
+Full Name: A distinct but relatable name that fits the user’s culture and location but should be completely different
+from that of the user .
 Age: An appropriate age, possibly slightly different from the user's for creative freedom, but still plausible.
 Gender: Consistent with the user’s gender or a slight variation for creativity.
 Location: A city or country similar to the user's location but slightly different to add depth to the profile.
@@ -282,7 +283,7 @@ def teach_bot(data, message_history, max_tokens=500):
     message = sys + message_history
     print(message)
     response = client.chat.completions.create(
-        model="llama3-groq-70b-8192-tool-use-preview",
+        model="llama-3.3-70b-versatile",
         messages=message,
         max_tokens=max_tokens,
         temperature=1.0,

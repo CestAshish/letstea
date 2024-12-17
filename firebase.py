@@ -4,7 +4,7 @@ import bcrypt
 import json
 from flask import current_app  # Needed for accessing the static folder in Flask
 
-from profiling_app.worker import chat_bot, topic_desc
+from worker import chat_bot, topic_desc
 
 # Initialize Firebase
 cred = credentials.Certificate("letstea.json")

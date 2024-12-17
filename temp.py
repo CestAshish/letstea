@@ -1,6 +1,6 @@
 import json
 
-topics_path = "profiling_app/static/topics.json"
+topics_path = "static/topics.json"
 with open(topics_path, 'r') as file:
     topics_data = json.load(file)
 
