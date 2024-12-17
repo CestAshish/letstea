@@ -7,10 +7,12 @@
     <title>Dynamic Sidebar Chat</title>
     <style>
         body {
+                                        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+
     display: flex;
     flex-direction: column;
     margin: 0;
-    background-color:rgb(33,33,33);
+    background-color: #ffb0b0;
     height: 100vh;
     overflow: hidden;
     font-family: Arial, sans-serif;
@@ -23,7 +25,9 @@ body::-webkit-scrollbar {
 
 /* Navbar styling */
 .navbar {
-background-color: rgb(23,23,23);
+                                font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+
+background-color: #e89d9d;
     display: flex;
     height: 8vh;
     width:100vw;
@@ -31,31 +35,42 @@ background-color: rgb(23,23,23);
 }
 
 .navbar-left {
-min-width: 250px;
+    min-width: 250px;
     flex: 0 0 25%; /* Left 25% */
-     /* Change this to your desired color */
     display: flex;
     align-items: center; /* Center content vertically */
-    justify-content: left; /* Center content horizontally */
+    justify-content: space-between; /* Space between items */
     color: white; /* Text color */
 }
 
 
-
 .navbar-right {
     flex: 0 0 75%; /* Right 75% */
-    background-color: rgb(33,33,33); /* Change this to your desired color */
+    background-color: #ffb0b0; /* Change this to your desired color */
     display: flex;
     align-items: center; /* Center content vertically */
     justify-content: flex-end; /* Align buttons to the right */
-    color: white; /* Text color */
+    color: black; /* Text color */
+}
+#message-list-head {
+    flex-grow: 1;
+    display: flex;
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    text-align: center; /* Center text inside */
+    margin: auto; /* Fully centers the content in any direction */
+
+    width: 100%;
+    height: 100%;
+    gap: 0.5rem;
+    scrollbar-width: none;
 }
 
 
 .toggle-btn,
 .toggle-btn-2 {
     font-size: 20px;
-    color: white;
+    color: black;
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -65,6 +80,10 @@ min-width: 250px;
 .toggle-btn-2 {
     display: none; /* Hide by default */
 }
+
+
+
+
 
 /* Main content styling */
 .main-content {
@@ -79,13 +98,13 @@ min-width: 250px;
 .sidebar {
     min-width: 250px;
     flex: 0 0 25%;
-    background-color: rgb(23,23,23);
+    background-color: #e89d9d;
     color: white;
 }
 
 .sidebarfull {
     flex: 0 0 100%;
-    background-color: rgb(23,23,23);
+    background-color: #e89d9d;
     color: white;
 }
 
@@ -128,6 +147,7 @@ iframe {
 
 }
 
+
     </style>
 </head>
 <body>
@@ -137,7 +157,9 @@ iframe {
         <button class="toggle-btn-2" id="toggle-btn-2">☰</button>
     </div>
     <div class="navbar-right"> <!-- Right section -->
-
+ <div id="message-list-head">
+                <!-- Topic and description will be displayed here -->
+            </div>
     </div>
 </div>
 
@@ -151,30 +173,92 @@ iframe {
         </div>
     </div>
     <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch the progress data from Flask when the page is loaded
+    fetch('/progress')
+        .then(response => response.json())
+        .then(data => {
+            // Extract the progress and data parts from the response
+            const prog = data.progress;
+            const userData = data.data; // This includes user profile, ai persona, and topic description
+
+            // Extract progress details
+            const { domain, cefr, index } = prog;
+
+            // Store the progress in localStorage (optional)
+            localStorage.setItem('progressLevel', cefr);
+            localStorage.setItem('progressIndex', index);
+            localStorage.setItem('progressDomain', domain);
+
+            // Log the progress to the console (optional)
+            console.log(prog);
+
+            // Store the user data (user profile, ai persona, topic description) in sessionStorage as a single variable
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+
+            // Optionally, log the user data to the console
+            console.log(userData);
+        })
+        .catch(error => console.error('Error fetching progress data:', error));
+});
+
         const sidebarContainer = document.getElementById('sidebar-container');
         const chatContainer = document.getElementById('chat-container');
         const toggleBtn = document.getElementById('toggle-btn');
         const toggleBtn2 = document.getElementById('toggle-btn-2');
-        function toggleSidebar() {
-            const isCollapsed = sidebarContainer.classList.toggle('collapsed');
-            chatContainer.classList.toggle('full-width', isCollapsed);
-            toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
-            updateNavbarColor();
-        }
-        function toggleSidebar2() {
-            const isCollapsed = sidebarContainer.classList.toggle('collapsed');
-            if (isCollapsed) {
-                sidebarContainer.classList.remove('sidebarfull'); // Collapse sidebar
-                chatContainer.classList.add('full-width'); // Expand chat content
-                toggleBtn2.innerHTML = "☰"; // Change button to open
+            const messageListHead = document.getElementById('message-list-head');
+     function updateDisplay() {
+            const topic = localStorage.getItem('sharedTopic');
+            messageListHead.innerHTML = `<strong>${topic || 'Topic: Not set'}</strong>`;
 
-            } else {
-                sidebarContainer.classList.add('sidebarfull'); // Expand sidebar
-                chatContainer.classList.remove('full-width'); // Reset chat content
-                toggleBtn2.innerHTML = "X"; // Change button to close
-            }
-            updateNavbarColor();
+
         }
+
+        // Update display on page load
+     updateDisplay();
+           // Listen for storage changes
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'sharedTopic' || event.key === 'sharedDesc') {
+                updateDisplay();
+            }
+        });
+
+        // Also check for updates if the variable was changed in the same tab
+        window.addEventListener('load', () => {
+            updateDisplay();
+        });
+        function toggleSidebar() {
+    const isCollapsed = sidebarContainer.classList.toggle('collapsed');
+    chatContainer.classList.toggle('full-width', isCollapsed);
+    toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
+    updateNavbarColor();
+
+    // Add margin to #message-list-head when collapsed
+    if (isCollapsed) {
+        messageListHead.style.marginRight = "33%";
+    } else {
+        messageListHead.style.marginRight = "0";
+    }
+}
+
+function toggleSidebar2() {
+    const isCollapsed = sidebarContainer.classList.toggle('collapsed');
+
+    if (isCollapsed) {
+        sidebarContainer.classList.remove('sidebarfull'); // Collapse sidebar
+        chatContainer.classList.add('full-width'); // Expand chat content
+        toggleBtn2.innerHTML = "☰"; // Change button to open
+        messageListHead.style.marginRight = "33%"; // Add margin when collapsed
+    } else {
+        sidebarContainer.classList.add('sidebarfull'); // Expand sidebar
+        chatContainer.classList.remove('full-width'); // Reset chat content
+        toggleBtn2.innerHTML = "X"; // Change button to close
+        messageListHead.style.marginRight = "0"; // Reset margin
+    }
+
+    updateNavbarColor();
+}
+
         function checkWindowSize() {
             if (window.innerWidth < 500) {
                 // Show toggle button 2 when screen is less than 500px
@@ -218,12 +302,12 @@ iframe {
 
              if(isLessThan500px){
              // Change navbar color based on whether the sidebar is collapsed
-            navbar.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(23, 23, 23)';
-            navbarRight.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(23, 23, 23)'; // Adjust colors based on sidebar state
+            navbar.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d';
+            navbarRight.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d'; // Adjust colors based on sidebar state
         }
         else{
-        navbar.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(23, 23, 23)';
-            navbarRight.style.backgroundColor = isCollapsed ? 'rgb(33, 33, 33)' : 'rgb(33, 33, 33)'; // Adjust colors based on sidebar state
+        navbar.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d';
+            navbarRight.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#ffb0b0'; // Adjust colors based on sidebar state
         }
     }
     </script>

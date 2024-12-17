@@ -5,160 +5,176 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh; /* Full viewport height */
-            margin: 0;
-            background-color: rgb(33, 33, 33);
-            color: rgb(255, 255, 255);
-            box-sizing: border-box;
-        }
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh; /* Full viewport height */
+        margin: 0;
+        background-color: #FFB0B0; /* Pastel pink background */
+        color: #4A4A4A; /* Darker grey text for contrast */
+        box-sizing: border-box;
+                                font-family: 'Courier New', Courier, monospace; /* Typewriter font */
 
-        .body {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-        }
+    }
 
-        #chat-window {
-            flex-grow: 1; /* Allow it to grow to fill available space */
-            max-height: 80vh; /* Set a max height for the chat window */
-            overflow-y: auto; /* Allow vertical scrolling */
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            width: 70%;
-            margin: auto;
-        }
+    .body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
 
-        #message-list {
-            max-height: 100%; /* Use full height of chat-window */
-            background-color: rgb(33, 33, 33);
-            overflow-y: auto; /* Enable scrolling when messages exceed height */
-            flex-grow: 1; /* Allow it to fill available space */
-            display: flex;
-            flex-direction: column;
-            scrollbar-width: none; /* For Firefox */
-        }
+    #chat-window {
+        flex-grow: 1; /* Allow it to grow to fill available space */
+        max-height: 80vh; /* Set a max height for the chat window */
+        overflow-y: auto; /* Allow vertical scrolling */
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        width: 85%;
+        margin: auto;
+        background-color: #FFE6E6; /* Slightly lighter pastel pink for chat window */
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-        #message-list::-webkit-scrollbar {
-            display: none; /* For Chrome/Safari */
-        }
+    #message-list {
+        max-height: 100%; /* Use full height of chat-window */
+        background-color: #FFE6E6;
+        overflow-y: auto; /* Enable scrolling when messages exceed height */
+        flex-grow: 1; /* Allow it to fill available space */
+        display: flex;
+        flex-direction: column;
+        scrollbar-width: none; /* For Firefox */
+        padding: 2rem;
+    }
 
-        .message {
-            max-width: 50%;
-            background-color: rgb(47, 47, 47);
-            color: rgb(255,255,255);
-            padding: 0.5rem;
-            border-radius: 4px;
-            align-self: flex-end;
-            margin-left: auto;
-        }
+    #message-list::-webkit-scrollbar {
+        display: none; /* For Chrome/Safari */
+    }
 
-        .bot-message {
-            max-width: 80%;
-            background-color: rgb(33, 33, 33);
-            color: rgb(255, 255, 255);
-            padding: 0.5rem;
-            border-radius: 4px;
-            align-self: flex-start;
-            margin-right: auto;
-        }
+    .message {
+        max-width: 50%;
+        background-color: #FFb0b0; /* Soft pink for user messages */
+        color: #000000;
+        padding: 0.5rem;
+        border-radius: 10px;
+        align-self: flex-end;
+        margin-left: auto;
+        margin-top: 1rem;
 
-        .loading-animation {
-            display: flex;
-            justify-content: center;
-            padding: 0.5rem;
-        }
+    }
 
-        .loading-dots {
-            display: flex;
-        }
+    .bot-message {
+        max-width: 80%;
+        background-color: #ffffff; /* Light pink for bot messages */
+        color: #000000; /* Grey text */
+        padding: 0.5rem;
+        border-radius: 10px;
+        align-self: flex-start;
+        margin-right: auto;
+        margin-top: 1rem;
+    }
 
-        .dot {
-            width: 10px;
-            height: 10px;
-            margin: 0 3px;
-            border-radius: 50%;
-            background-color: rgb(255, 255, 255);
-            animation: loading 1s infinite;
-        }
+    .loading-animation {
+        display: flex;
+        justify-content: center;
+        padding: 0.5rem;
+    }
 
-        .dot:nth-child(1) {
-            animation-delay: 0s;
-        }
+    .loading-dots {
+        display: flex;
+    }
 
-        .dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
+    .dot {
+        width: 10px;
+        height: 10px;
+        margin: 0 3px;
+        border-radius: 50%;
+        background-color: #000000; /* Grey dots for animation */
+        animation: loading 1s infinite;
+    }
 
-        .dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+    .dot:nth-child(1) {
+        animation-delay: 0s;
+    }
 
-        @keyframes loading {
-            0%, 80%, 100% {
-                transform: scale(1);
-            }
-            40% {
-                transform: scale(1.5);
-            }
-        }
+    .dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
 
-        .input-group {
-            height: 6vh;
-            display: flex;
-            justify-content: center;
-            width: 90%;
-            padding: 0 0 1rem 0;
-            margin: auto;
-        }
+    .dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
 
-        .input-group input {
-            background-color: rgb(47, 47, 47);
-            color: rgb(255,255,255);
-            border: none;
-            padding: 0.5rem;
-            border-radius: 30px;
-            width: 80%;
-            margin-right: 0.5rem;
+    @keyframes loading {
+        0%, 80%, 100% {
+            transform: scale(1);
         }
+        40% {
+            transform: scale(1.5);
+        }
+    }
 
-        .input-group button {
-            background-color: rgb(47, 47, 47);
-            color: rgb(0, 0, 0);
-            border: none;
-            padding: 0.5rem 1rem;
-            margin-left: 0.5rem;
-            border-radius: 10px;
-            cursor: pointer;
-            position: relative;
-        }
+    .input-group {
+        height: 6vh;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        padding: 0 0 1rem 0;
+        margin: auto;
+    }
 
-        .input-group button:active {
-            background-color: rgb(200, 200, 200);
-        }
+    .input-group input {
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        background-color: #FFFFFF;
+        color: #000000;
+        border: none;
+        padding: 0.5rem;
+        padding-left:1.5rem;
+        border-radius: 30px;
+        width: 80%;
+        margin-right: 0.5rem;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+        outline: none; /* Disable the black border */
 
-        .input-group button.active {
-            background-color: rgb(100, 255, 100);
-        }
+    }
 
-        .toast {
-            position: fixed;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            display: none;
-            z-index: 1000;
-        }
-    </style>
+    .input-group button {
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        background-color: #FFB0B0; /* Base pink for buttons */
+        color: #000000; /* Grey text */
+        border: none;
+        padding: 0.5rem 1rem;
+        margin-left: 0.5rem;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 900;
+        position: relative;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-group button:active {
+        background-color: #FFD6D6; /* Lighter pink when active */
+    }
+
+    .input-group button.active {
+        background-color: #FF8888; /* Slightly brighter pink for active button */
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(255, 176, 176, 0.9); /* Toast matches theme */
+        color: #4A4A4A; /* Grey text */
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+        z-index: 1000;
+    }
+</style>
 </head>
 <body>
 
@@ -290,13 +306,15 @@
     }
 
 async function sendMessage(message) {
+const userData = JSON.parse(sessionStorage.getItem('userData'));
     if (message === "initprompt") {
         try {
             messageHistory.push({ role: 'user', content: "initprompt" });
-            const response = await fetch('/chat', {
+            const response = await fetch('/teach', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ history: messageHistory, username: userName })
+                body: JSON.stringify({ history: messageHistory, userData: userData })
+
             });
 
             if (!response.ok) throw new Error("Network response error");
@@ -332,10 +350,10 @@ async function sendMessage(message) {
     messageList.scrollTop = messageList.scrollHeight;
 
     try {
-        const response = await fetch('/chat', {
+        const response = await fetch('/teach', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ history: messageHistory, username: userName })
+            body: JSON.stringify({ history: messageHistory, userData: userData })
         });
 
         if (!response.ok) throw new Error("Network response error");
@@ -343,31 +361,7 @@ async function sendMessage(message) {
         const data = await response.json();
         messageList.removeChild(loadingContainer); // Remove loading animation
 
-       if (data.status === "success" && data.message === "resulthasbeenobtained") {
-    const userData = data.data;
-    sessionStorage.setItem('userdata', JSON.stringify(userData));
-
-    // Create a form element to send data via POST
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/proficiency_test'; // The endpoint to which you want to submit the data
-
-    // Create a hidden input for userData
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'userData'; // Name of the parameter to be sent
-    input.value = JSON.stringify(userData); // Ensure to stringify if it's an object
-    form.appendChild(input);
-
-    // Append the form to the body and submit it
-    document.body.appendChild(form);
-    form.submit(); // This will send a POST request to '/essay'
-
-    displayBotMessage("Your data has been sent for further processing.");
-} else if (data.status === "error" && data.message === "restartisrequired") {
-            alert("An error occurred. Please try again.");
-            window.location.reload();
-        } else if (data.message) { // Check if message exists before displaying
+        if (data.message) { // Check if message exists before displaying
             messageHistory.push({ role: 'assistant', content: data.message });
             displayBotMessage(data.message);
         } else {

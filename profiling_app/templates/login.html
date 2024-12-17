@@ -149,7 +149,7 @@
             }
         }
 
-        const endpoint = isSignup ? '/create_user' : '/login';
+        const endpoint = isSignup ? '/create_user' : '/dologin';
         const data = isSignup ? { username, email, password } : { username, password };
 
         fetch(endpoint, {
@@ -160,7 +160,10 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
-                showToast(isSignup ? "Signup successful!" : "Login successful!");
+                const expireDate = new Date();
+expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
+document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
+showToast(isSignup ? "Signup successful!" : "Login successful!");
                 sessionStorage.setItem('username', username);
                 console.log(data.flag)
                 if(data.flag){

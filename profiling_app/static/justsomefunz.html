@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repeating Typing Animation</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Remove scrollbars and set background */
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            background-color: #ffb0b0;
+        }
+
+        /* Container for the Spline Scene */
+        .spline-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Logo Mask Styling */
+        .logo-mask {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 40px;
+            background-color: #FFB0B0;
+            border: none;
+            border-radius: 10px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .logo-mask img {
+            max-width: 150px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+
+        /* Welcome Text Styling */
+        .welcome-text {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        /* Typing Animation */
+        .typing {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid #fff;
+            animation: typing 3s steps(30, end);
+        }
+
+        /* Typing Animation Keyframes */
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 23ch; /* Adjust to match the length of the text */
+            }
+        }
+
+        /* Blinking Cursor Keyframes */
+        @keyframes blink {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        /* Reset Animation Keyframes */
+        @keyframes reset {
+            0%, 95% {
+                visibility: visible;
+            }
+            96%, 100% {
+                visibility: hidden;
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .welcome-text {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="spline-container">
+        <!-- Embedded Spline Scene -->
+        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.48/build/spline-viewer.js"></script>
+        <spline-viewer url="https://prod.spline.design/GojUoz17I8kIajyF/scene.splinecode"></spline-viewer>
+
+        <!-- Logo Mask -->
+        <div class="logo-mask">
+            <img src="logo-text.png" alt="Logo">
+        </div>
+
+        <!-- Welcome Text -->
+        <div class="welcome-text">
+            <!-- Static Line -->
+            <div>Welcome!!!</div>
+            <!-- Typing Line -->
+            <div class="typing">We are going to have some fun!!</div>
+        </div>
+    </div>
+</body>
+</html>

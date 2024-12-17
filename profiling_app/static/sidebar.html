@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Example</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            margin: 0;
+            background-color: #e89d9d;
+            color: rgb(0,0,0);
+            box-sizing: border-box;
+        }
+
+        .body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+
+        .sidebar {
+            width: 100%;
+            background-color: #e89d9d;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0 1rem 0 1rem;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .toggle-btn:focus {
+            outline: none;
+        }
+
+        #topic-list {
+            max-height: calc(100vh );
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+
+            scrollbar-width: none;
+        }
+
+        #topic-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        .topic {
+            font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+            background-color: #ffb0b0;
+            color: black;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+            cursor: pointer;
+
+        }
+
+        .topic.selected {
+            background-color: #ffc2c2;
+
+        }
+         .topic.selected:hover{
+            background-color: #ffffff;
+
+        }
+
+        .topic:hover {
+            background-color: #ffd6d6;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar" class="sidebar">
+     <div id="topic-list">
+
+            </div>
+    </div>
+    <h2 id="selected-topic-name" style="display: none;">Selected Topic: </h2>
+    <p id="selected-topic-desc" style="display: none;">Description: </p>
+    <p id="selected-topic-index" style="display: none;">Index: </p>
+
+<script>
+    const level = localStorage.getItem('progressLevel');
+    const indexToScroll = localStorage.getItem('progressIndex');
+    const domain = localStorage.getItem('progressDomain');
+    let currentSelectedTopic = null;
+    // Fetch and load topics from JSON file
+    fetch('/static/topics.json')
+        .then(response => response.json())
+        .then(data => {
+            const topics = data[domain.toLowerCase()][level];
+            populateTopics(topics);
+        })
+        .catch(error => console.error('Error loading JSON:', error));
+
+    function updateVariable(topicName, topicDesc, index) {
+        localStorage.setItem('sharedTopic', topicName);
+        localStorage.setItem('sharedDesc', topicDesc);
+        localStorage.setItem('sharedIndex', index);
+        window.dispatchEvent(new Event('storage'));
+    }
+
+    /**
+     * Populates the topic list dynamically.
+     * @param {Object} topics - Topics data to populate.
+     */
+    function populateTopics(topics) {
+        const topicList = document.getElementById('topic-list');
+        topicList.innerHTML = '';
+
+        // Iterate through topics and create DOM elements
+        Object.keys(topics).forEach(key => {
+            const topicData = topics[key];
+            const topicElement = document.createElement('div');
+
+            topicElement.className = 'topic';
+            topicElement.textContent = topicData.Topic;
+            topicElement.onclick = () => {
+                selectTopic(topicData.Topic, topicData.desc, key, topicElement);
+            };
+
+            topicList.appendChild(topicElement);
+        });
+
+        // Scroll to and select the pre-defined topic
+        const selectedTopic = topicList.children[indexToScroll - 1];
+        if (selectedTopic) {
+            selectedTopic.classList.add('selected');
+            currentSelectedTopic = selectedTopic;
+            selectedTopic.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            selectTopic(selectedTopic.textContent, topics[indexToScroll].desc, indexToScroll, selectedTopic);
+        }
+    }
+
+    /**
+     * Handles topic selection and updates the UI.
+     * @param {string} topicName - Name of the topic.
+     * @param {string} topicDesc - Description of the topic.
+     * @param {number} index - Index of the topic.
+     * @param {HTMLElement} topicElement - The clicked topic element.
+     */
+    function selectTopic(topicName, topicDesc, index, topicElement) {
+        if (currentSelectedTopic) {
+            currentSelectedTopic.classList.remove('selected');
+        }
+
+        currentSelectedTopic = topicElement;
+        currentSelectedTopic.classList.add('selected');
+
+        document.getElementById('selected-topic-name').textContent = 'Selected Topic: ' + topicName;
+        document.getElementById('selected-topic-desc').textContent = 'Description: ' + topicDesc;
+        document.getElementById('selected-topic-index').textContent = 'Index: ' + index;
+
+        updateVariable(topicName, topicDesc, index);
+    }
+
+    /**
+     * Toggles the sidebar visibility.
+     */
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleButton = document.getElementById('toggle-button');
+
+        sidebar.classList.toggle('collapsed');
+        toggleButton.classList.toggle('hide');
+    }
+</script>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

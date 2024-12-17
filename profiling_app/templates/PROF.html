@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split Page Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color:#ffb0b0
+        }
+
+        /* Container for the layout */
+        .container {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+        }
+
+        /* Left 1/3rd iframe for JustSomeFunz */
+        .left-panel {
+            flex: 0.33; /* 1/3rd of the screen */
+            height: 100%;
+            background-color: #f4f4f4; /* Light grey */
+        }
+        .left-panel iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Right 2/3rd iframe for Profiler */
+        .right-panel {
+            flex: 0.67; /* 2/3rd of the screen */
+            height: 100%;
+            background-color: #ffffff; /* White */
+            border-left: 2px solid #ccc;
+        }
+        .right-panel iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Media Query for Smaller Devices */
+        @media screen and (max-width: 768px) {
+            .left-panel {
+                display: none; /* Remove JustSomeFunz on small devices */
+            }
+            .right-panel {
+                flex: 1; /* Make Profiler take full screen */
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel: JustSomeFunz -->
+        <div class="left-panel">
+            <iframe src="{{ url_for('static', filename='justsomefunz.html') }}" title="JustSomeFunz"></iframe>
+        </div>
+
+        <!-- Right Panel: Profiler -->
+        <div class="right-panel">
+            <iframe src="{{ url_for('static', filename='profiler.html') }}" title="Profiler"></iframe>
+        </div>
+    </div>
+</body>
+</html>
