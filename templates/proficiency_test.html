@@ -7,25 +7,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         body {
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
             display: flex;
             flex-direction: column;
             height: 100vh;
             margin: 0;
-            background-color: rgb(33, 33, 33);
-            color: rgb(255, 255, 255);
+            background-color: #FFB0B0; /* Light pink background */
+            color: rgb(33, 33, 33); /* Dark text for contrast */
             overflow: hidden;
             justify-content: center; /* Center content vertically */
             align-items: center; /* Center content horizontally */
         }
         .head {
-        padding:1rem;
-        width:90%;
+            padding: 1rem;
+            width: 90%;
             height: 20vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: auto;
-            font-size: 1rem; /* Increase font size for visibility */
+            font-size: 1rem;
+            color: #333; /* Dark text for the heading */
         }
         .container {
             height: 70vh;
@@ -36,37 +38,42 @@
             width: 90%;
         }
         textarea {
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+           outline:none;
             width: 100%; /* Full width of the container */
             height: 60vh; /* Fixed height */
             margin-bottom: 1rem;
             padding: 10px;
             border-radius: 5px;
             border: none;
-            background-color: rgb(57, 57, 57);
-            color: rgb(255, 255, 255);
+            background-color: #F9E0E0; /* Soft pink background for the textarea */
+            color: #333; /* Dark text for readability */
             resize: none; /* Prevent resizing */
             scrollbar-width: none; /* Hide scrollbar for Firefox */
         }
         /* Hide scrollbar for Webkit browsers (Chrome, Safari) */
         textarea::-webkit-scrollbar {
-            display: none; /* Hide scrollbar */
+            display: none;
         }
         .buttoncss {
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
             width: 10%; /* Adjust button width */
             border: none;
             border-radius: 5px;
-            background-color: rgb(225, 225, 255);
+            background-color: #e89d9d;
             color: black;
             cursor: pointer;
-            padding: 10px; /* Add some padding for better appearance */
+            padding: 10px;
             margin-bottom: 1rem;
-            margin-left: 90%; /* Align button to the right */
+            margin-left: 90%;
             display: flex;
             justify-content: center;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Adds a soft shadow */
+
         }
         .buttoncss:hover {
-            background-color: black;
-            color: white;
+            background-color: #FFffff; /* Darker pink on hover */
+            color: black;
         }
         .toast {
             position: fixed;
@@ -84,7 +91,7 @@
 </head>
 <body>
 
-<div class="head" id="head-div">{{ topic}}</div>
+<div class="head" id="head-div">{{ topic }}</div>
 
 <div class="container">
     <textarea id="user-input" placeholder="Type your essay here..."></textarea>
@@ -92,10 +99,11 @@
 </div>
 
 <div class="toast" id="toast">Action performed successfully!</div>
+
 <script>
     const userData = JSON.parse(sessionStorage.getItem('userdata'));
     const userName = sessionStorage.getItem('username');
-    console.log(userData)
+    console.log(userData);
 
     // Show toast notification function
     function showToast(message) {

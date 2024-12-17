@@ -6,10 +6,13 @@ import json
 from firebase import add_user, login_user, add_user_profile_to_firebase, get_Data, add_progress_to_firebase
 from worker import essay_topic, chat_bot, proficiency_cal, teach_bot
 
+
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the 'uploads' directory exists
 client = Groq()
+
+app.config['SECRET_KEY'] = os.urandom(24)
 
 
 @app.route('/')
@@ -39,10 +42,29 @@ def progress_and_teach_info():
 def learn():
      return render_template("learn.html")
 
+
+@app.route('/selected_topic', methods=['POST'])
+def selected_topic():
+    data = request.get_json()  # Get the JSON data from the request
+
+    # Extract the index, domain, and level from the data
+    index = data.get('index')
+    domain = data.get('domain')
+    level = data.get('level')
+
+    # You can process the data here (e.g., save it to a database, log it, etc.)
+    print(f"Selected Topic - Index: {index}, Domain: {domain}, Level: {level}")
+
+    # Return a response
+    return jsonify({'status': 'success', 'message': 'Topic data received successfully'})
+
+
 @app.route('/profiler')
 def profiler():
     return render_template("PROF.html")
 
+
+from flask import session
 
 @app.route('/proficiency_test', methods=['POST'])
 def proficiency_test():
@@ -51,18 +73,34 @@ def proficiency_test():
         user_data = json.loads(user_data)
         topic_response = essay_topic(user_data)
 
-        # Return a redirection URL
-        return jsonify({"redirect_url": url_for('proficiency_test_page', topic=topic_response)})
+        # Store the topic response in the session
+        session['topic'] = topic_response
+
+        # Return a redirection URL without exposing the topic in the URL
+        return jsonify({"redirect_url": url_for('proficiency_test_page')})
     except Exception as e:
         print(f"Error in proficiency_test: {e}")
         return jsonify({"error": "error occurred"}), 500
 
 
+from flask import session, render_template
+
+
 @app.route('/proficiency_test_page')
 def proficiency_test_page():
-    topic = request.args.get('topic', 'Default topic')
-    return render_template('proficiency_test.html', topic=topic)
+    try:
+        topic = session.get('topic')
 
+        # If the topic is not available, handle the case (redirect or show an error)
+        if not topic:
+            return jsonify({"error": "Topic not found"}), 404
+
+        # Render the template with the topic
+        return render_template('proficiency_test.html', topic=topic)
+
+    except Exception as e:
+        print(f"Error in proficiency_test_page: {e}")
+        return jsonify({"error": "An error occurred while loading the page"}), 500
 
 
 @app.route('/proficiency_test_cal', methods=['POST'])
