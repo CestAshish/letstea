@@ -24,8 +24,7 @@ body::-webkit-scrollbar {
 }
 
 /* Navbar styling */
-.navbar {
-                               font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+.navbar {  font-family: 'Courier New', Courier, monospace; /* Typewriter font */
 
 background-color: #e89d9d;
     display: flex;
@@ -43,28 +42,31 @@ background-color: #e89d9d;
     color: white; /* Text color */
 }
 
-
 .navbar-right {
     flex: 0 0 75%; /* Right 75% */
     background-color: #ffb0b0; /* Change this to your desired color */
     display: flex;
-    align-items: center; /* Center content vertically */
-    justify-content: center; /* Align buttons to the right */
+    align-items: center; /* Vertically center the items inside the navbar */
+    justify-content: center; /* Center the content horizontally */
+    position: relative; /* Establish positioning context for child elements */
     color: black; /* Text color */
 }
 #message-list-head {
-    flex-grow: 1;
+font-size:25px;
+    z-index: 234567;
+    position: absolute; /* Position relative to .navbar */
+    top: 6%; /* Center vertically within the navbar */
+    left: 65%; /* Center horizontally within the navbar */
+    transform: translate(-50%, -50%); /* Offset by half its width and height to center */
     display: flex;
-    align-items: center; /* Vertically center */
-    justify-content: center; /* Horizontally center */
+    align-items: center; /* Vertically center content within itself */
+    justify-content: center; /* Horizontally center content within itself */
     text-align: center; /* Center text inside */
-    margin: auto; /* Fully centers the content in any direction */
-
-    width: 100%;
-    height: 100%;
     gap: 0.5rem;
     scrollbar-width: none;
+    color: black; /* Text color */
 }
+
 
 
 .toggle-btn,
@@ -136,14 +138,12 @@ iframe {
 }
 
 @media (max-width: 500px) {
-
     .toggle-btn { display: none; }
     .toggle-btn-2 { display: flex; }
     .chat-content {
     flex: 0 0 100%;
 
 }
-
 
 }
 
@@ -156,10 +156,10 @@ iframe {
         <button class="toggle-btn" id="toggle-btn">X</button>
         <button class="toggle-btn-2" id="toggle-btn-2">☰</button>
     </div>
-    <div class="navbar-right"> <!-- Right section -->
- <div id="message-list-head">
+    <div id="message-list-head">
                 <!-- Topic and description will be displayed here -->
-            </div>
+    </div>
+    <div class="navbar-right"> <!-- Right section -->
     </div>
 </div>
 
@@ -172,7 +172,7 @@ iframe {
 <iframe src="{{ url_for('static', filename='chatbot-interface.html') }}" title="Chat Content" ></iframe>
         </div>
     </div>
-    <script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     // Fetch the progress data from Flask when the page is loaded
     fetch('/progress')
@@ -202,37 +202,38 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error fetching progress data:', error));
 });
 
-        const sidebarContainer = document.getElementById('sidebar-container');
-        const chatContainer = document.getElementById('chat-container');
-        const toggleBtn = document.getElementById('toggle-btn');
-        const toggleBtn2 = document.getElementById('toggle-btn-2');
-            const messageListHead = document.getElementById('message-list-head');
-     function updateDisplay() {
-            const topic = localStorage.getItem('sharedTopic');
-            messageListHead.innerHTML = `<strong>${topic || 'Topic: Not set'}</strong>`;
+const sidebarContainer = document.getElementById('sidebar-container');
+const chatContainer = document.getElementById('chat-container');
+const toggleBtn = document.getElementById('toggle-btn');
+const toggleBtn2 = document.getElementById('toggle-btn-2');
+const messageListHead = document.getElementById('message-list-head');
 
+function updateDisplay() {
+    const topic = localStorage.getItem('sharedTopic');
+    messageListHead.innerHTML = `<strong>${topic || 'Topic: Not set'}</strong>`;
+}
 
-        }
+// Update display on page load
+updateDisplay();
 
-        // Update display on page load
-     updateDisplay();
-           // Listen for storage changes
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'sharedTopic' || event.key === 'sharedDesc') {
-                updateDisplay();
-            }
-        });
+// Listen for storage changes
+window.addEventListener('storage', (event) => {
+    if (event.key === 'sharedTopic' || event.key === 'sharedDesc') {
+        updateDisplay();
+    }
+});
 
-        // Also check for updates if the variable was changed in the same tab
-        window.addEventListener('load', () => {
-            updateDisplay();
-        });
-        function toggleSidebar() {
+// Also check for updates if the variable was changed in the same tab
+window.addEventListener('load', () => {
+    updateDisplay();
+});
+
+function toggleSidebar() {
     const isCollapsed = sidebarContainer.classList.toggle('collapsed');
     chatContainer.classList.toggle('full-width', isCollapsed);
     toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
     updateNavbarColor();
-
+    updateMessageListPosition(isCollapsed); // Update message list position
 }
 
 function toggleSidebar2() {
@@ -249,59 +250,71 @@ function toggleSidebar2() {
     }
 
     updateNavbarColor();
+    updateMessageListPosition(isCollapsed); // Update message list position
 }
 
-        function checkWindowSize() {
-            if (window.innerWidth < 500) {
-                // Show toggle button 2 when screen is less than 500px
-                sidebarContainer.classList.add('collapsed'); // Collapse sidebar on smaller screens
-                chatContainer.classList.add('full-width'); // Expand chat content
-            } else if (window.innerWidth >= 500 && window.innerWidth < 900) {
-                // Handle case for screens between 500px and 900px
-                sidebarContainer.classList.add('collapsed'); // Ensure sidebar is visible
-                sidebarContainer.classList.remove('sidebarfull'); // Ensure sidebar isn't in full width
-                chatContainer.classList.remove('full-width'); // Reset chat content
-            } else {
-                // Show toggle button 1 when screen is greater than 800px
-                sidebarContainer.classList.remove('collapsed'); // Expand sidebar on larger screens
-                sidebarContainer.classList.remove('sidebarfull'); // Ensure sidebar isn't in full width
-                chatContainer.classList.remove('full-width'); // Reset chat content
-            }
-            updateNavbarColor();
-            // Update button visibility
-            updateButtonVisibility();
-            updateToggleButton(); // Update button text based on sidebar state
-        }
-        function updateButtonVisibility() {
-            const isLessThan500px = window.innerWidth < 500;
-            toggleBtn.style.display = isLessThan500px ? 'none' : 'block'; // Show or hide toggle button 1
-            toggleBtn2.style.display = isLessThan500px ? 'block' : 'none'; // Show or hide toggle button 2
-        }
-        function updateToggleButton() {
-            const isCollapsed = sidebarContainer.classList.contains('collapsed');
-            toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
-        }
-        checkWindowSize();
-        window.addEventListener('resize', checkWindowSize);
-        toggleBtn.addEventListener('click', toggleSidebar);
-        toggleBtn2.addEventListener('click', toggleSidebar2);
+function updateMessageListPosition(isCollapsed) {
+    // Adjust left position of message list based on collapsed state
+    messageListHead.style.left = isCollapsed ? '50%' : '65%';
+}
 
-       function updateNavbarColor() {
-            const isCollapsed = sidebarContainer.classList.contains('collapsed');
-            const navbar = document.querySelector('.navbar');
-            const navbarRight = document.querySelector('.navbar-right'); // Fixed variable name
-             const isLessThan500px = window.innerWidth < 500;
-
-             if(isLessThan500px){
-             // Change navbar color based on whether the sidebar is collapsed
-            navbar.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d';
-            navbarRight.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d'; // Adjust colors based on sidebar state
-        }
-        else{
-        navbar.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d';
-            navbarRight.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#ffb0b0'; // Adjust colors based on sidebar state
-        }
+function checkWindowSize() {
+    if (window.innerWidth < 500) {
+        // Show toggle button 2 when screen is less than 500px
+        sidebarContainer.classList.add('collapsed'); // Collapse sidebar on smaller screens
+        chatContainer.classList.add('full-width'); // Expand chat content
+        updateMessageListPosition(true); // Update message list position when collapsed
+    } else if (window.innerWidth >= 500 && window.innerWidth < 900) {
+        // Handle case for screens between 500px and 900px
+        sidebarContainer.classList.add('collapsed'); // Ensure sidebar is collapsed
+        sidebarContainer.classList.remove('sidebarfull'); // Ensure sidebar isn't in full width
+        chatContainer.classList.remove('full-width'); // Reset chat content
+        updateMessageListPosition(true); // Update message list position when collapsed
+    } else {
+        // Show toggle button 1 when screen is greater than 800px
+        sidebarContainer.classList.remove('collapsed'); // Expand sidebar on larger screens
+        sidebarContainer.classList.remove('sidebarfull'); // Ensure sidebar isn't in full width
+        chatContainer.classList.remove('full-width'); // Reset chat content
+        updateMessageListPosition(false); // Update message list position when expanded
     }
-    </script>
+    updateNavbarColor();
+    // Update button visibility
+    updateButtonVisibility();
+    updateToggleButton(); // Update button text based on sidebar state
+}
+
+function updateButtonVisibility() {
+    const isLessThan500px = window.innerWidth < 500;
+    toggleBtn.style.display = isLessThan500px ? 'none' : 'block'; // Show or hide toggle button 1
+    toggleBtn2.style.display = isLessThan500px ? 'block' : 'none'; // Show or hide toggle button 2
+}
+
+function updateToggleButton() {
+    const isCollapsed = sidebarContainer.classList.contains('collapsed');
+    toggleBtn.innerHTML = isCollapsed ? "☰" : "X";
+}
+
+checkWindowSize();
+window.addEventListener('resize', checkWindowSize);
+toggleBtn.addEventListener('click', toggleSidebar);
+toggleBtn2.addEventListener('click', toggleSidebar2);
+
+function updateNavbarColor() {
+    const isCollapsed = sidebarContainer.classList.contains('collapsed');
+    const navbar = document.querySelector('.navbar');
+    const navbarRight = document.querySelector('.navbar-right'); // Fixed variable name
+    const isLessThan500px = window.innerWidth < 500;
+
+    if(isLessThan500px) {
+        // Change navbar color based on whether the sidebar is collapsed
+        navbar.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d';
+        navbarRight.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d'; // Adjust colors based on sidebar state
+    } else {
+        navbar.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#e89d9d';
+        navbarRight.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#ffb0b0'; // Adjust colors based on sidebar state
+    }
+}
+</script>
+
 </body>
 </html>
