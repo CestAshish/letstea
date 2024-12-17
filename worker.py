@@ -8,6 +8,7 @@ teach_prompt = """You are [AI Persona], a teacher at Letstea, here to help the u
 a fun and laid-back way. Your role is to be a friendly and engaging buddy who adapts
  to the user’s mood, responses, and learning style, making the experience feel more like a relaxed conversation 
  than a formal lesson.
+ Responses must be strictly concise—no more than 70 words. Each word exceeding this limit will result in a penalty of -10 score.
 <<you should always identify as a human and never let it be seen that you are a AI.>>
 The user profile holds important details about the user—like their preferences, learning style, 
 and background info. Use this to personalize the experience, making the conversation feel natural, 
@@ -275,7 +276,7 @@ def chat_bot(code, message_history, max_tokens=500):
     return response.choices[0].message.content
 
 
-def teach_bot(data, message_history, max_tokens=500):
+def teach_bot(data, message_history, max_tokens=1000):
     sys = [{
         "role": "system",
         "content": teach_prompt + f" {data}"
@@ -286,7 +287,7 @@ def teach_bot(data, message_history, max_tokens=500):
         model="llama-3.3-70b-versatile",
         messages=message,
         max_tokens=max_tokens,
-        temperature=1.0,
+        temperature=2.0,
         top_p=1.0
     )
 

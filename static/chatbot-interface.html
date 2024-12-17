@@ -197,6 +197,34 @@
 <div class="toast" id="toast">Couldn't understand, please try again.</div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Fetch the progress data from Flask when the page is loaded
+    fetch('/progress')
+        .then(response => response.json())
+        .then(data => {
+            // Extract the progress and data parts from the response
+            const prog = data.progress;
+            const userData = data.data; // This includes user profile, ai persona, and topic description
+
+            // Extract progress details
+            const { domain, cefr, index } = prog;
+
+            // Store the progress in localStorage (optional)
+            localStorage.setItem('progressLevel', cefr);
+            localStorage.setItem('progressIndex', index);
+            localStorage.setItem('progressDomain', domain);
+
+            // Log the progress to the console (optional)
+            console.log(prog);
+
+            // Store the user data (user profile, ai persona, topic description) in sessionStorage as a single variable
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+
+            // Optionally, log the user data to the console
+            console.log(userData);
+        })
+        .catch(error => console.error('Error fetching progress data:', error));
+});
     const actionButton = document.getElementById('action-button');
     const messageInput = document.getElementById('message-input');
     const messageList = document.getElementById('message-list');
