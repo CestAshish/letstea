@@ -13,7 +13,7 @@
         background-color: #FFB0B0; /* Pastel pink background */
         color: #4A4A4A; /* Darker grey text for contrast */
         box-sizing: border-box;
-                                font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
 
     }
 
@@ -174,6 +174,25 @@
         display: none;
         z-index: 1000;
     }
+
+    .input-group button#next-button  {
+        font-family: 'Courier New', Courier, monospace;
+        visibility: hidden;
+        background-color: #FFB0B0;
+        color: #000000;
+        border: none;
+        padding: 0.5rem 1rem;
+        margin-left: 0.5rem;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 900;
+        position: relative;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-group button#next-button:active {
+        background-color: #FFD6D6;
+    }
 </style>
 </head>
 <body>
@@ -193,10 +212,12 @@
     <button id="action-button">
         <i style='font-size:20px' class='fas fa-microphone'></i>
     </button>
+    <button id="next-button">Next</button>
 </div>
 <div class="toast" id="toast">Couldn't understand, please try again.</div>
 
 <script>
+    const nextButton = document.getElementById('next-button');
     let topic ='';
     const actionButton = document.getElementById('action-button');
     const messageInput = document.getElementById('message-input');
@@ -385,7 +406,13 @@ window.onload = function () {
 
     // Fetch the topic from localStorage
     topic = localStorage.getItem('sharedTopic');
-
+    pregtopic = localStorage.getItem('progressTopic');
+    if (topic === pregtopic){
+    nextButton.style.visibility = 'visible'
+    }
+    else {
+    nextButton.style.visibility = 'hidden'
+    }
     // Prepare the data to send
     const topicData = { topic: topic };
 
@@ -418,6 +445,8 @@ window.addEventListener('storage', (event) => {
         console.log("ashish is pookie")}
     }
 });
+
+
 
 
 </script>
