@@ -6,6 +6,7 @@
     <title>Sidebar Example</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Font Awesome -->
     <style>
         body {
             display: flex;
@@ -23,7 +24,6 @@
             flex-direction: column;
             padding: 0;
         }
-
 
         .sidebar {
             width: 100%;
@@ -44,11 +44,10 @@
         }
 
         #topic-list {
-            max-height: calc(100vh );
+            max-height: calc(100vh);
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-
             scrollbar-width: none;
         }
 
@@ -65,39 +64,113 @@
             margin-bottom: 10px;
             transition: background-color 0.3s, transform 0.3s;
             cursor: pointer;
-
         }
 
         .topic.selected {
             background-color: #ffc2c2;
-
         }
-         .topic.selected:hover{
-            background-color: #ffffff;
 
+        .topic.selected:hover {
+            background-color: #ffffff;
         }
 
         .topic:hover {
             background-color: #ffd6d6;
         }
+
+        /* Locked topics */
+        .topic.locked {
+            font-family: 'Courier New', Courier, monospace; /* Keep typewriter font */
+            background-color: #ffb0b0; /* Same base color for consistency */
+            color: black; /* Maintain text color */
+            padding: 15px; /* Keep existing padding */
+            border-radius: 4px; /* Same border-radius */
+            margin-bottom: 10px; /* Keep same margin */
+            cursor: not-allowed; /* Indicate unclickable */
+            opacity: 0.8; /* Slightly faded to differentiate locked topics */
+            border: 1px dashed #000; /* Add dashed border for locked topics */
+        }
+
+        /* Locked topics hover effect */
+        .topic.locked:hover {
+            background-color: #ffb0b0; /* No hover effect for locked topics */
+            transform: none; /* Prevent hover scaling */
+        }
+
+        /* Lock symbol styling */
+        .lock-symbol {
+            font-size: 16px; /* Adjust size for a minimalist look */
+            color: black; /* Pure black for simplicity */
+            margin-left: 8px; /* Space between text and lock symbol */
+            vertical-align: middle; /* Aligns lock symbol with text */
+        }
+
+        /* Toast pop-up styling */
+        .toast-popup {
+            position: absolute;
+            z-index: 1000; /* Ensure it appears above other elements */
+            background-color: #ff6666; /* Red for a warning look */
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transform: translate(-50%, -100%); /* Adjust position to center above click */
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out;
+        }
+
+        /* Animation for the toast */
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -120%);
+            }
+            10% {
+                opacity: 1;
+                transform: translate(-50%, -100%);
+            }
+            90% {
+                opacity: 1;
+                transform: translate(-50%, -100%);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -80%);
+            }
+        }
+
+@font-face {
+    font-family:'Symbola-Regular';
+    src: url('../Fonts/Symbola/Symbola_gdi.eot');
+    src: url('../Fonts/Symbola/Symbola_gdi.eot?#iefix') format('embedded-opentype'),
+        url('../Fonts/Symbola/Symbola_gdi.woff') format('woff'),
+        url('../Fonts/Symbola/Symbola_gdi.ttf') format('truetype'),
+        url('../Fonts/Symbola/Symbola_gdi.svg#Symbola-Regular') format('svg');
+}
+@font-face {
+  font-family: Symbola-Regular;
+}
+.lock { font-family: Segoe UI Symbol, Symbola-Regular; }
+
     </style>
 </head>
 <body>
     <div id="sidebar" class="sidebar">
-     <div id="topic-list">
-
-            </div>
+        <div id="topic-list"></div>
     </div>
+
     <h2 id="selected-topic-name" style="display: none;">Selected Topic: </h2>
     <p id="selected-topic-desc" style="display: none;">Description: </p>
     <p id="selected-topic-index" style="display: none;">Index: </p>
 
 <script>
-
     const level = localStorage.getItem('progressLevel');
     const indexToScroll = localStorage.getItem('progressIndex');
     const domain = localStorage.getItem('progressDomain');
     let currentSelectedTopic = null;
+
     // Fetch and load topics from JSON file
     fetch('/static/topics.json')
         .then(response => response.json())
@@ -118,30 +191,72 @@
         const topicList = document.getElementById('topic-list');
         topicList.innerHTML = '';
 
-        // Iterate through topics and create DOM elements
-        Object.keys(topics).forEach(key => {
-            const topicData = topics[key];
-            const topicElement = document.createElement('div');
+        if (!topics || !Object.keys(topics).length) {
+            topicList.textContent = 'No topics available.';
+            return;
+        }
 
+        const progressIndex = parseInt(localStorage.getItem('progressIndex'), 10);
+
+        Object.entries(topics).forEach(([key, topicData]) => {
+            const topicElement = document.createElement('div');
             topicElement.className = 'topic';
-            topicElement.textContent = topicData.Topic;
-            topicElement.onclick = () => {
-                selectTopic(topicData.Topic, topicData.desc, key, topicElement);
-            };
+
+            const topicIndex = parseInt(key, 10);
+            if (topicIndex <= progressIndex) {
+                topicElement.textContent = topicData.Topic;
+                topicElement.onclick = () =>
+                    selectTopic(topicData.Topic, topicData.desc, topicIndex, topicElement);
+            } else {
+                topicElement.innerHTML = `${topicData.Topic}`;
+                topicElement.classList.add('locked');
+
+            }
 
             topicList.appendChild(topicElement);
         });
 
-        // Scroll to and select the pre-defined topic
-        const selectedTopic = topicList.children[indexToScroll - 1];
-        if (selectedTopic) {
-            selectedTopic.classList.add('selected');
-            currentSelectedTopic = selectedTopic;
-            selectedTopic.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            selectTopic(selectedTopic.textContent, topics[indexToScroll].desc, indexToScroll, selectedTopic);
+        // Automatically scroll and highlight the previously selected topic
+        const selectedIndex = Object.keys(topics).findIndex(
+            (key) => parseInt(key, 10) === progressIndex
+        );
+
+        if (selectedIndex !== -1) {
+            const selectedTopicElement = topicList.children[selectedIndex];
+            const selectedTopicData = Object.values(topics)[selectedIndex];
+
+            if (selectedTopicElement && selectedTopicData) {
+                selectedTopicElement.classList.add('selected');
+                selectedTopicElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                selectTopic(
+                    selectedTopicData.Topic,
+                    selectedTopicData.desc,
+                    parseInt(Object.keys(topics)[selectedIndex], 10),
+                    selectedTopicElement
+                );
+            }
         }
     }
 
+    function showToast(event, message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-popup';
+        toast.textContent = message;
+
+        // Position the toast at the click location
+        const { clientX, clientY } = event;
+        toast.style.left = `${clientX}px`;
+        toast.style.top = `${clientY}px`;
+
+        // Add to the body
+        document.body.appendChild(toast);
+
+        // Remove the toast after 3 seconds
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
 
     function selectTopic(topicName, topicDesc, index, topicElement) {
         if (currentSelectedTopic) {
@@ -157,31 +272,22 @@
 
         updateVariable(topicName, topicDesc, index);
     }
-window.onload = function () {
-    // Fetch progress data from Flask when the page is loaded
-    fetch('/progress')
-        .then((response) => response.json())
-        .then((data) => {
-            // Extract progress and user data from the response
-            const prog = data;
-            const { domain, cefr, index } = prog;
 
-            // Store progress in localStorage (optional)
-            localStorage.setItem('progressLevel', cefr);
-            localStorage.setItem('progressIndex', index);
-            localStorage.setItem('progressDomain', domain);
+    window.onload = function () {
+        // Fetch progress data from Flask when the page is loaded
+        fetch('/progress')
+            .then((response) => response.json())
+            .then((data) => {
+                const prog = data;
+                const { domain, cefr, index } = prog;
 
-        })
-        .catch((error) => console.error('Error fetching progress data:', error));
-};
-
-
-
+                // Store progress in localStorage (optional)
+                localStorage.setItem('progressLevel', cefr);
+                localStorage.setItem('progressIndex', index);
+                localStorage.setItem('progressDomain', domain);
+            })
+            .catch((error) => console.error('Error fetching progress data:', error));
+    };
 </script>
-
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+  </body>
 </html>

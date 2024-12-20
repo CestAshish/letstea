@@ -68,7 +68,6 @@ def login_user(username, password):
     try:
         ref = db.reference('users')
         user_data = ref.child(username).get()
-        print("User Data Retrieved:", user_data)
         if user_data is None:
             return {'status': 'error', 'message': 'User not found.'}, 404
         if bcrypt.checkpw(password.encode('utf-8'), user_data['password'].encode('utf-8')):

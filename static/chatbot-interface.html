@@ -317,9 +317,9 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
             });
 
             if (!response.ok) throw new Error("Network response error");
-
             const data = await response.json();
             messageHistory.push({ role: 'assistant', content: data.message });
+
             displayBotMessage(data.message);
         } catch (error) {
             console.error("Error:", error);
@@ -382,6 +382,7 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
     }
 
 window.onload = function () {
+
     // Fetch the topic from localStorage
     topic = localStorage.getItem('sharedTopic');
 
