@@ -52,7 +52,6 @@ background-color: #e89d9d;
     color: black; /* Text color */
 }
 #message-list-head {
-font-size:25px;
     z-index: 234567;
     position: absolute; /* Position relative to .navbar */
     top: 6%; /* Center vertically within the navbar */
@@ -62,6 +61,7 @@ font-size:25px;
     align-items: center; /* Vertically center content within itself */
     justify-content: center; /* Horizontally center content within itself */
     text-align: center; /* Center text inside */
+    font-size:25px;
     gap: 0.5rem;
     scrollbar-width: none;
     color: black; /* Text color */
@@ -173,34 +173,6 @@ iframe {
         </div>
     </div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Fetch the progress data from Flask when the page is loaded
-    fetch('/progress')
-        .then(response => response.json())
-        .then(data => {
-            // Extract the progress and data parts from the response
-            const prog = data.progress;
-            const userData = data.data; // This includes user profile, ai persona, and topic description
-
-            // Extract progress details
-            const { domain, cefr, index } = prog;
-
-            // Store the progress in localStorage (optional)
-            localStorage.setItem('progressLevel', cefr);
-            localStorage.setItem('progressIndex', index);
-            localStorage.setItem('progressDomain', domain);
-
-            // Log the progress to the console (optional)
-            console.log(prog);
-
-            // Store the user data (user profile, ai persona, topic description) in sessionStorage as a single variable
-            sessionStorage.setItem('userData', JSON.stringify(userData));
-
-            // Optionally, log the user data to the console
-            console.log(userData);
-        })
-        .catch(error => console.error('Error fetching progress data:', error));
-});
 
 const sidebarContainer = document.getElementById('sidebar-container');
 const chatContainer = document.getElementById('chat-container');
@@ -211,6 +183,7 @@ const messageListHead = document.getElementById('message-list-head');
 function updateDisplay() {
     const topic = localStorage.getItem('sharedTopic');
     messageListHead.innerHTML = `<strong>${topic || 'Topic: Not set'}</strong>`;
+    console.log("poopie pie")
 }
 
 // Update display on page load

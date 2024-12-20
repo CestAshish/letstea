@@ -197,34 +197,7 @@
 <div class="toast" id="toast">Couldn't understand, please try again.</div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Fetch the progress data from Flask when the page is loaded
-    fetch('/progress')
-        .then(response => response.json())
-        .then(data => {
-            // Extract the progress and data parts from the response
-            const prog = data.progress;
-            const userData = data.data; // This includes user profile, ai persona, and topic description
-
-            // Extract progress details
-            const { domain, cefr, index } = prog;
-
-            // Store the progress in localStorage (optional)
-            localStorage.setItem('progressLevel', cefr);
-            localStorage.setItem('progressIndex', index);
-            localStorage.setItem('progressDomain', domain);
-
-            // Log the progress to the console (optional)
-            console.log(prog);
-
-            // Store the user data (user profile, ai persona, topic description) in sessionStorage as a single variable
-            sessionStorage.setItem('userData', JSON.stringify(userData));
-
-            // Optionally, log the user data to the console
-            console.log(userData);
-        })
-        .catch(error => console.error('Error fetching progress data:', error));
-});
+    let topic ='';
     const actionButton = document.getElementById('action-button');
     const messageInput = document.getElementById('message-input');
     const messageList = document.getElementById('message-list');
@@ -232,45 +205,42 @@
     const userName = sessionStorage.getItem('username');
     let mediaRecorder;
     let audioChunks = [];
-    let messageHistory = []; // Array to keep track of the message history
+    let messageHistory = []; // Track the message history
 
-    // Function to set microphone icon
+    // Set microphone icon
     function setMicIcon() {
         actionButton.innerHTML = "<i style='font-size:20px' class='fas fa-microphone'></i>";
     }
 
-    // Function to set send text
+    // Set send text
     function setSendText() {
         actionButton.innerHTML = "Send";
     }
 
     // Handle input changes and button behavior
-    messageInput.addEventListener('input', function() {
-        if (messageInput.value.trim() === "") {
-            setMicIcon(); // Show mic icon if input is empty
-        } else {
-            setSendText(); // Show send text if there's input
-        }
+    messageInput.addEventListener('input', () => {
+        messageInput.value.trim() === "" ? setMicIcon() : setSendText();
     });
 
     // Handle button actions for both text send and audio record
-    actionButton.addEventListener('mousedown', function() {
+    actionButton.addEventListener('mousedown', () => {
         if (messageInput.value.trim() === "") {
-            startVoiceRecording(); // Start voice recording if input is empty
-        }
-        else {sendMessage(messageInput.value);
+            startVoiceRecording(); // Start voice recording
+        } else {
+            sendMessage(messageInput.value);
             messageInput.value = ""; // Clear input after sending
-            setMicIcon();}
+            setMicIcon();
+        }
     });
 
-    actionButton.addEventListener('mouseup', function() {
+    actionButton.addEventListener('mouseup', () => {
         if (messageInput.value.trim() === "") {
             stopVoiceRecording(); // Stop recording and send audio
         }
     });
 
     // Send message when pressing enter key
-    messageInput.addEventListener('keypress', function(event) {
+    messageInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter' && messageInput.value.trim() !== "") {
             sendMessage(messageInput.value);
             messageInput.value = ""; // Clear input after sending
@@ -295,7 +265,7 @@
             audioChunks = [];
             mediaRecorder.start();
 
-            mediaRecorder.ondataavailable = event => {
+            mediaRecorder.ondataavailable = (event) => {
                 audioChunks.push(event.data);
             };
 
@@ -317,7 +287,7 @@
                 }
             };
 
-            mediaRecorder.onerror = function(event) {
+            mediaRecorder.onerror = (event) => {
                 console.error('Recording error: ' + event.error);
                 showToast("Couldn't understand, please try again.");
             };
@@ -332,6 +302,7 @@
             mediaRecorder.stop();
         }
     }
+
 
 async function sendMessage(message) {
 const userData = JSON.parse(sessionStorage.getItem('userData'));
@@ -401,7 +372,6 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
         displayBotMessage("Error: Unable to fetch response.");
     }
 }
-
     // Function to display bot message
     function displayBotMessage(response) {
         const botMessage = document.createElement('div');
@@ -411,10 +381,44 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
         messageList.scrollTop = messageList.scrollHeight;
     }
 
-    // Initial load prompt
-    window.onload = function() {
-        sendMessage("initprompt"); // Send the init prompt when the window loads
-    };
+window.onload = function () {
+    // Fetch the topic from localStorage
+    topic = localStorage.getItem('sharedTopic');
+
+    // Prepare the data to send
+    const topicData = { topic: topic };
+
+    // Fetch the progress data from Flask, sending the topic in the request
+    fetch('/getdata', {
+        method: 'POST', // Use POST to send the topic
+        headers: {
+            'Content-Type': 'application/json', // Specify JSON format
+        },
+        body: JSON.stringify(topicData), // Send topic as JSON in the request body
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        // Extract the user data from the response
+        const userData = data; // Includes user profile, AI persona, and topic description
+        sessionStorage.setItem('userData', JSON.stringify(userData));
+
+        // Send the init prompt after fetching user data
+        sendMessage("initprompt");
+    })
+    .catch((error) => console.error('Error fetching progress data:', error));
+};
+
+window.addEventListener('storage', (event) => {
+
+    if (event.key === 'sharedTopic') {
+        // Reload the page to execute the HTML and JavaScript again
+        if (topic !== localStorage.getItem('sharedTopic')){
+        window.location.reload();
+        console.log("ashish is pookie")}
+    }
+});
+
+
 </script>
 
 

@@ -93,34 +93,7 @@
     <p id="selected-topic-index" style="display: none;">Index: </p>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Fetch the progress data from Flask when the page is loaded
-    fetch('/progress')
-        .then(response => response.json())
-        .then(data => {
-            // Extract the progress and data parts from the response
-            const prog = data.progress;
-            const userData = data.data; // This includes user profile, ai persona, and topic description
 
-            // Extract progress details
-            const { domain, cefr, index } = prog;
-
-            // Store the progress in localStorage (optional)
-            localStorage.setItem('progressLevel', cefr);
-            localStorage.setItem('progressIndex', index);
-            localStorage.setItem('progressDomain', domain);
-
-            // Log the progress to the console (optional)
-            console.log(prog);
-
-            // Store the user data (user profile, ai persona, topic description) in sessionStorage as a single variable
-            sessionStorage.setItem('userData', JSON.stringify(userData));
-
-            // Optionally, log the user data to the console
-            console.log(userData);
-        })
-        .catch(error => console.error('Error fetching progress data:', error));
-});
     const level = localStorage.getItem('progressLevel');
     const indexToScroll = localStorage.getItem('progressIndex');
     const domain = localStorage.getItem('progressDomain');
@@ -141,10 +114,6 @@
         window.dispatchEvent(new Event('storage'));
     }
 
-    /**
-     * Populates the topic list dynamically.
-     * @param {Object} topics - Topics data to populate.
-     */
     function populateTopics(topics) {
         const topicList = document.getElementById('topic-list');
         topicList.innerHTML = '';
@@ -173,13 +142,7 @@
         }
     }
 
-    /**
-     * Handles topic selection and updates the UI.
-     * @param {string} topicName - Name of the topic.
-     * @param {string} topicDesc - Description of the topic.
-     * @param {number} index - Index of the topic.
-     * @param {HTMLElement} topicElement - The clicked topic element.
-     */
+
     function selectTopic(topicName, topicDesc, index, topicElement) {
         if (currentSelectedTopic) {
             currentSelectedTopic.classList.remove('selected');
@@ -194,17 +157,26 @@
 
         updateVariable(topicName, topicDesc, index);
     }
+window.onload = function () {
+    // Fetch progress data from Flask when the page is loaded
+    fetch('/progress')
+        .then((response) => response.json())
+        .then((data) => {
+            // Extract progress and user data from the response
+            const prog = data;
+            const { domain, cefr, index } = prog;
 
-    /**
-     * Toggles the sidebar visibility.
-     */
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const toggleButton = document.getElementById('toggle-button');
+            // Store progress in localStorage (optional)
+            localStorage.setItem('progressLevel', cefr);
+            localStorage.setItem('progressIndex', index);
+            localStorage.setItem('progressDomain', domain);
 
-        sidebar.classList.toggle('collapsed');
-        toggleButton.classList.toggle('hide');
-    }
+        })
+        .catch((error) => console.error('Error fetching progress data:', error));
+};
+
+
+
 </script>
 
 

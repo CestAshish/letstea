@@ -2,83 +2,354 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup/Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Title</title>
     <style>
-        /* General styles */
-        * {
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #1e1e1e;
-            color: #ffffff;
-            font-size: 16px;
-        }
-        h2 {
-            margin: 0;
-            font-size: 2rem;
-            color: #ffffff;
-            text-align: center;
-        }
-        /* Container styles */
-        .container {
-            width: 90%;
-            max-width: 400px;
-            padding: 2rem;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #434343, #282828);
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        /* Form elements */
-        input[type="text"], input[type="email"], input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            margin-top: 1rem;
-            border: none;
-            border-radius: 8px;
-            background-color: #3a3a3a;
-            color: #ffffff;
-            font-size: 1rem;
-            outline: none;
-        }
-        /* Buttons */
-        .buttoncss {
-            width: 100%;
-            padding: 12px;
-            margin-top: 1.5rem;
-            border: none;
-            border-radius: 8px;
-            background-color: #6c63ff;
-            color: #ffffff;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .buttoncss:hover {
-            background-color: #5753d6;
-        }
-        /* Toggle button */
-        .toggle-button {
-            cursor: pointer;
-            color: #6c63ff;
-            background: none;
-            border: none;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            text-decoration: underline;
-        }
-        /* Toast */
-        .toast {
+:root {
+    --primary-color: #ffb0b0;
+    --secondary-color: #e89d9d;
+    --black: #000000;
+    --white: #ffffff;
+    --gray: #efefef;
+    --gray-2: #757575;
+
+    --facebook-color: #4267B2;
+    --google-color: #DB4437;
+    --twitter-color: #1DA1F2;
+    --insta-color: #E1306C;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap');
+
+* {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100vh;
+}
+
+.col {
+    width: 50%;
+}
+
+.align-items-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 28rem;
+}
+
+.form {
+    padding: 1rem;
+    background-color: var(--white);
+    border-radius: 1.5rem;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transform: scale(0);
+    transition: .5s ease-in-out;
+    transition-delay: 1s;
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.input-group i {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    color: var(--gray-2);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 1rem 3rem;
+    font-size: 1rem;
+    background-color: var(--gray);
+    border-radius: .5rem;
+    border: 0.125rem solid var(--white);
+    outline: none;
+}
+
+.input-group input:focus {
+    border: 0.125rem solid var(--primary-color);
+}
+
+.form button {
+    cursor: pointer;
+    width: 100%;
+    padding: .6rem 0;
+    border-radius: .5rem;
+    border: none;
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-size: 1.2rem;
+    outline: none;
+}
+
+.form p {
+    margin: 1rem 0;
+    font-size: .7rem;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.social-list {
+    margin: 2rem 0;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transform: scale(0);
+    transition: .5s ease-in-out;
+    transition-delay: 1.2s;
+}
+
+.social-list>div {
+    color: var(--white);
+    margin: 0 .5rem;
+    padding: .7rem;
+    cursor: pointer;
+    border-radius: .5rem;
+    cursor: pointer;
+    transform: scale(0);
+    transition: .5s ease-in-out;
+}
+
+.social-list>div:nth-child(1) {
+    transition-delay: 1.4s;
+}
+
+.social-list>div:nth-child(2) {
+    transition-delay: 1.6s;
+}
+
+.social-list>div:nth-child(3) {
+    transition-delay: 1.8s;
+}
+
+.social-list>div:nth-child(4) {
+    transition-delay: 2s;
+}
+
+.social-list>div>i {
+    font-size: 1.5rem;
+    transition: .4s ease-in-out;
+}
+
+.social-list>div:hover i {
+    transform: scale(1.5);
+}
+
+.facebook-bg {
+    background-color: var(--facebook-color);
+}
+
+.google-bg {
+    background-color: var(--google-color);
+}
+
+.twitter-bg {
+    background-color: var(--twitter-color);
+}
+
+.insta-bg {
+    background-color: var(--insta-color);
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.container.sign-in .form.sign-in,
+.container.sign-in .social-list.sign-in,
+.container.sign-in .social-list.sign-in>div,
+.container.sign-up .form.sign-up,
+.container.sign-up .social-list.sign-up,
+.container.sign-up .social-list.sign-up>div {
+    transform: scale(1);
+}
+
+.content-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 6;
+    width: 100%;
+}
+
+.text {
+    margin: 4rem;
+    color: var(--white);
+}
+
+.text h2 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 2rem 0;
+    transition: 1s ease-in-out;
+}
+
+.text p {
+    font-weight: 600;
+    transition: 1s ease-in-out;
+    transition-delay: .2s;
+}
+
+.img img {
+    width: 30vw;
+    transition: 1s ease-in-out;
+    transition-delay: .4s;
+}
+
+.text.sign-in h2,
+.text.sign-in p,
+.img.sign-in img {
+    transform: translateX(-250%);
+}
+
+.text.sign-up h2,
+.text.sign-up p,
+.img.sign-up img {
+    transform: translateX(250%);
+}
+
+.container.sign-in .text.sign-in h2,
+.container.sign-in .text.sign-in p,
+.container.sign-in .img.sign-in img,
+.container.sign-up .text.sign-up h2,
+.container.sign-up .text.sign-up p,
+.container.sign-up .img.sign-up img {
+    transform: translateX(0);
+}
+
+/* BACKGROUND */
+
+.container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 300vw;
+    transform: translate(35%, 0);
+    background-image: linear-gradient(-45deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    transition: 1s ease-in-out;
+    z-index: 6;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-bottom-right-radius: max(50vw, 50vh);
+    border-top-left-radius: max(50vw, 50vh);
+}
+
+.container.sign-in::before {
+    transform: translate(0, 0);
+    right: 50%;
+}
+
+.container.sign-up::before {
+    transform: translate(100%, 0);
+    right: 50%;
+}
+
+/* RESPONSIVE */
+
+@media only screen and (max-width: 425px) {
+
+    .container::before,
+    .container.sign-in::before,
+    .container.sign-up::before {
+        height: 100vh;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 0;
+        z-index: 0;
+        transform: none;
+        right: 0;
+    }
+
+    /* .container.sign-in .col.sign-up {
+        transform: translateY(100%);
+    } */
+
+    .container.sign-in .col.sign-in,
+    .container.sign-up .col.sign-up {
+        transform: translateY(0);
+    }
+
+    .content-row {
+        align-items: flex-start !important;
+    }
+
+    .content-row .col {
+        transform: translateY(0);
+        background-color: unset;
+    }
+
+    .col {
+        width: 100%;
+        position: absolute;
+        padding: 2rem;
+        background-color: var(--white);
+        border-top-left-radius: 2rem;
+        border-top-right-radius: 2rem;
+        transform: translateY(100%);
+        transition: 1s ease-in-out;
+    }
+
+    .row {
+        align-items: flex-end;
+        justify-content: flex-end;
+    }
+
+    .form,
+    .social-list {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .text {
+        margin: 0;
+    }
+
+    .text p {
+        display: none;
+    }
+
+    .text h2 {
+        margin: .5rem;
+        font-size: 2rem;
+    }
+}
+	.toast {
             position: fixed;
             bottom: 10%;
             left: 50%;
@@ -91,33 +362,124 @@
             z-index: 1000;
             font-size: 0.9rem;
             animation: fadeInOut 4s ease;
-        }
-    </style>
+        }</style>
 </head>
 <body>
-<div class="container">
-    <h2 id="form-title">Login</h2>
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="email" id="email" placeholder="Email" style="display: none;">
-    <input type="password" id="password" placeholder="Password" required>
-    <input type="password" id="confirm-password" placeholder="Confirm Password" style="display: none;">
-    <button id="submit-button" class="buttoncss">Login</button>
-    <button class="toggle-button" onclick="toggleForm()">Create an account</button>
-</div>
+
+<div id="container" class="container">
+		<!-- FORM SECTION -->
+		<div class="row">
+			<!-- SIGN UP -->
+			<div class="col align-items-center flex-col sign-up">
+				<div class="form-wrapper align-items-center">
+					<div class="form sign-up">
+						<div class="input-group">
+							<i class='bx bxs-user'></i>
+							<input type="text" id="signup-username" placeholder="Username">
+						</div>
+						<div class="input-group">
+							<i class='bx bx-mail-send'></i>
+							<input type="email" id="signup-email" placeholder="Email">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-lock-alt'></i>
+							<input type="password" id="signup-password" placeholder="Password">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-lock-alt'></i>
+							<input type="password" id="signup-confirm-password" placeholder="Confirm password">
+						</div>
+						<button onclick="handleSignup()">
+							Sign up
+						</button>
+						<p>
+							<span>
+								Already have an account?
+							</span>
+							<b onclick="toggle()" class="pointer">
+								Sign in here
+							</b>
+						</p>
+					</div>
+				</div>
+
+			</div>
+			<!-- END SIGN UP -->
+			<!-- SIGN IN -->
+			<div class="col align-items-center flex-col sign-in">
+				<div class="form-wrapper align-items-center">
+					<div class="form sign-in">
+						<div class="input-group">
+							<i class='bx bxs-user'></i>
+							<input type="text" id="login-username" placeholder="Username">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-lock-alt'></i>
+							<input type="password" id="login-password" placeholder="Password">
+						</div>
+						<button onclick="handleLogin()">
+							Sign in
+						</button>
+						<p>
+							<span>
+								Don't have an account?
+							</span>
+							<b onclick="toggle()" class="pointer">
+								Sign up here
+							</b>
+						</p>
+					</div>
+				</div>
+				<div class="form-wrapper">
+
+				</div>
+			</div>
+			<!-- END SIGN IN -->
+		</div>
+		<!-- END FORM SECTION -->
+		<!-- CONTENT SECTION -->
+		<div class="row content-row">
+			<!-- SIGN IN CONTENT -->
+			<div class="col align-items-center flex-col">
+				<div class="text sign-in">
+					<h2>
+Welcome!!!
+					</h2>
+
+				</div>
+				<div class="img sign-in">
+
+				</div>
+			</div>
+			<!-- END SIGN IN CONTENT -->
+			<!-- SIGN UP CONTENT -->
+			<div class="col align-items-center flex-col">
+				<div class="img sign-up">
+
+				</div>
+				<div class="text sign-up">
+					<h2>
+						Let's get<br>the gossip brewing!
+					</h2>
+
+				</div>
+			</div>
+			<!-- END SIGN UP CONTENT -->
+		</div>
+		<!-- END CONTENT SECTION -->
+	</div>
 <div class="toast" id="toast">Action performed successfully!</div>
 
-<script>
-    let isSignup = false;
+       <script>
+    let container = document.getElementById('container');
 
-    function toggleForm() {
-        isSignup = !isSignup;
-        document.getElementById('form-title').textContent = isSignup ? "Signup" : "Login";
-        document.getElementById('email').style.display = isSignup ? "block" : "none";
-        document.getElementById('confirm-password').style.display = isSignup ? "block" : "none";
-        document.getElementById('submit-button').textContent = isSignup ? "Signup" : "Login";
-        document.querySelector('.toggle-button').textContent = isSignup ? "Already have an account? Login" : "Create an account";
+    // Toggle function for switching forms
+    function toggle() {
+        container.classList.toggle('sign-in');
+        container.classList.toggle('sign-up');
     }
 
+    // Show toast message
     function showToast(message) {
         const toast = document.getElementById('toast');
         toast.textContent = message;
@@ -127,58 +489,107 @@
         }, 3000);
     }
 
-    document.getElementById('submit-button').addEventListener('click', () => {
-        const username = document.getElementById('username').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-
-        if (isSignup) {
-            if (!username || !email || !password || !confirmPassword) {
-                showToast("All fields are required for signup.");
-                return;
-            }
-            if (password !== confirmPassword) {
-                showToast("Passwords do not match.");
-                return;
-            }
+    // Redirect based on flag
+    function handleRedirect(flag) {
+        if (flag) {
+            window.location.href = '/learn';
         } else {
-            if (!username || !password) {
-                showToast("Username and password are required for login.");
-                return;
-            }
+            window.location.href = '/profiler';
+        }
+    }
+
+    // Handle Sign Up
+    function handleSignup() {
+        const username = document.getElementById('signup-username').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const confirmPassword = document.getElementById('signup-confirm-password').value;
+
+        if (!username || !email || !password || !confirmPassword) {
+            showToast("All fields are required for signup.");
+            return;
+        }
+        if (password !== confirmPassword) {
+            showToast("Passwords do not match.");
+            return;
         }
 
-        const endpoint = isSignup ? '/create_user' : '/dologin';
-        const data = isSignup ? { username, email, password } : { username, password };
+        const data = { username, email, password };
 
-        fetch(endpoint, {
+        fetch('/create_user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                const expireDate = new Date();
-expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
-document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
-showToast(isSignup ? "Signup successful!" : "Login successful!");
-                sessionStorage.setItem('username', username);
-                console.log(data.flag)
-                if(data.flag){
-                window.location.href = '/learn' ;}
-                else{window.location.href = '/profiler' ;}
-            } else {
-                showToast(data.message || "There was an error. Please try again.");
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast("An error occurred. Please try again.");
-        });
-    });
-</script>
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === "success") {
+                    const expireDate = new Date();
+                    expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
+                    document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
+                    showToast("Signup successful!");
+                    sessionStorage.setItem('username', username);
+                    handleRedirect(data.flag);
+                } else {
+                    showToast(data.message || "There was an error. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast("An error occurred. Please try again.");
+            });
+    }
 
+    // Handle Login
+    function handleLogin() {
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        if (!username || !password) {
+            showToast("Username and password are required for login.");
+            return;
+        }
+
+        const data = { username, password };
+
+        fetch('/dologin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === "success") {
+                    const expireDate = new Date();
+                    expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
+                    document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
+                    showToast("Login successful!");
+                    sessionStorage.setItem('username', username);
+                    handleRedirect(data.flag);
+                } else {
+                    showToast(data.message || "There was an error. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast("An error occurred. Please try again.");
+            });
+    }
+        // Initialize the form state
+        setTimeout(() => {
+            container.classList.add('sign-in');
+        }, 200);
+
+    </script>
 </body>
 </html>

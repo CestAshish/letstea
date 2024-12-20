@@ -1,9 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, db
 import bcrypt
-import json
-from flask import current_app  # Needed for accessing the static folder in Flask
-
 from worker import chat_bot, topic_desc
 
 # Initialize Firebase
@@ -46,26 +43,23 @@ def add_user(username, email, password):
         return {'status': 'error', 'message': str(e)}, 500
 
 
-def get_Data(username):
+def get_progress(username):
     ref = db.reference('users')
     user_data = ref.child(username).get()
     progress = user_data["progress"]
+    return progress
+
+
+def get_Data(username, topic):
+    ref = db.reference('users')
+    user_data = ref.child(username).get()
     persona = user_data["ai_persona"]
     profile = user_data["user_profile"]
-    topics_path = current_app.static_folder + '/topics.json'
-    with open(topics_path, 'r') as file:
-        topics_data = json.load(file)
-    domain = str(progress["domain"])
-    cefr = str(progress["cefr"])
-    index = str(progress["index"])
-    topic = topics_data[domain.lower()][cefr.upper()][index]["Topic"]
     topic_detail = topic_desc(topic, user_data)
     data = {"user profile": profile,
             "ai persona": persona,
             "topic description": topic_detail}
-
-    data_fin = {"data" : data, "progress" : progress}
-    return data_fin
+    return data
 
 
 def login_user(username, password):

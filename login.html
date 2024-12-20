@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup/Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* General styles */
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-size: 16px;
+        }
+        h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: #ffffff;
+            text-align: center;
+        }
+        /* Container styles */
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #434343, #282828);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* Form elements */
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 1rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+        }
+        /* Buttons */
+        .buttoncss {
+            width: 100%;
+            padding: 12px;
+            margin-top: 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #6c63ff;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .buttoncss:hover {
+            background-color: #5753d6;
+        }
+        /* Toggle button */
+        .toggle-button {
+            cursor: pointer;
+            color: #6c63ff;
+            background: none;
+            border: none;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+            font-size: 0.9rem;
+            animation: fadeInOut 4s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 id="form-title">Login</h2>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="email" id="email" placeholder="Email" style="display: none;">
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="password" id="confirm-password" placeholder="Confirm Password" style="display: none;">
+    <button id="submit-button" class="buttoncss">Login</button>
+    <button class="toggle-button" onclick="toggleForm()">Create an account</button>
+</div>
+<div class="toast" id="toast">Action performed successfully!</div>
+
+<script>
+    let isSignup = false;
+
+    function toggleForm() {
+        isSignup = !isSignup;
+        document.getElementById('form-title').textContent = isSignup ? "Signup" : "Login";
+        document.getElementById('email').style.display = isSignup ? "block" : "none";
+        document.getElementById('confirm-password').style.display = isSignup ? "block" : "none";
+        document.getElementById('submit-button').textContent = isSignup ? "Signup" : "Login";
+        document.querySelector('.toggle-button').textContent = isSignup ? "Already have an account? Login" : "Create an account";
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    document.getElementById('submit-button').addEventListener('click', () => {
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (isSignup) {
+            if (!username || !email || !password || !confirmPassword) {
+                showToast("All fields are required for signup.");
+                return;
+            }
+            if (password !== confirmPassword) {
+                showToast("Passwords do not match.");
+                return;
+            }
+        } else {
+            if (!username || !password) {
+                showToast("Username and password are required for login.");
+                return;
+            }
+        }
+
+        const endpoint = isSignup ? '/create_user' : '/dologin';
+        const data = isSignup ? { username, email, password } : { username, password };
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                const expireDate = new Date();
+expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
+document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
+showToast(isSignup ? "Signup successful!" : "Login successful!");
+                sessionStorage.setItem('username', username);
+                console.log(data.flag)
+                if(data.flag){
+                window.location.href = '/learn' ;}
+                else{window.location.href = '/profiler' ;}
+            } else {
+                showToast(data.message || "There was an error. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast("An error occurred. Please try again.");
+        });
+    });
+</script>
+
+</body>
+</html>

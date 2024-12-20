@@ -1,11 +1,13 @@
-import os
-from flask import Flask, request, jsonify, render_template, redirect, url_for
-from groq import Groq
 import json
+import os
 
-from firebase import add_user, login_user, add_user_profile_to_firebase, get_Data, add_progress_to_firebase
+from flask import Flask, request, jsonify, redirect, url_for, session, render_template
+
+from groq import Groq
+
+from firebase import add_user, login_user, add_user_profile_to_firebase, add_progress_to_firebase, \
+    get_Data, get_progress
 from worker import essay_topic, chat_bot, proficiency_cal, teach_bot
-
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -22,6 +24,7 @@ def index():
 
 @app.errorhandler(404)
 def page_not_found(e):
+    print(f'log : {e}')
     return render_template('404.html'), 404
 
 
@@ -31,40 +34,30 @@ def login():
 
 
 @app.route('/progress')
-def progress_and_teach_info():
-     user = request.cookies.get('username')
-     Data = get_Data(user)
-     print(Data)
-     return jsonify(Data)
+def progress():
+    user = request.cookies.get('username')
+    data = get_progress(user)
+    return jsonify(data)
+
+
+@app.route('/getdata', methods=['POST'])
+def getdata():
+    data = request.get_json()
+    topic = data.get('topic')
+    user = request.cookies.get('username')
+    data = get_Data(user, topic)
+    return jsonify(data)
 
 
 @app.route('/learn')
 def learn():
-     return render_template("learn.html")
-
-
-@app.route('/selected_topic', methods=['POST'])
-def selected_topic():
-    data = request.get_json()  # Get the JSON data from the request
-
-    # Extract the index, domain, and level from the data
-    index = data.get('index')
-    domain = data.get('domain')
-    level = data.get('level')
-
-    # You can process the data here (e.g., save it to a database, log it, etc.)
-    print(f"Selected Topic - Index: {index}, Domain: {domain}, Level: {level}")
-
-    # Return a response
-    return jsonify({'status': 'success', 'message': 'Topic data received successfully'})
+    return render_template("learn.html")
 
 
 @app.route('/profiler')
 def profiler():
     return render_template("PROF.html")
 
-
-from flask import session
 
 @app.route('/proficiency_test', methods=['POST'])
 def proficiency_test():
@@ -81,9 +74,6 @@ def proficiency_test():
     except Exception as e:
         print(f"Error in proficiency_test: {e}")
         return jsonify({"error": "error occurred"}), 500
-
-
-from flask import session, render_template
 
 
 @app.route('/proficiency_test_page')
@@ -146,7 +136,7 @@ def chat():
                                         )
                 response += continuation.strip()
             user_data = json.loads(response)
-            add_user_profile_to_firebase(username,user_data)
+            add_user_profile_to_firebase(username, user_data)
             return jsonify({
                 "status": "success",
                 "message": "resulthasbeenobtained",

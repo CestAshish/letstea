@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Dino Game</title>
+    <style>
+        /* General Styling */
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #eaeaea; /* Light grey background */
+            font-family: Arial, sans-serif;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 200px;
+            background-color: #f8f8f8; /* Slightly darker grey for the game box */
+            border: 2px solid #bbb; /* Softer grey border */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border-radius: 8px; /* Rounded corners for a modern look */
+            overflow: hidden;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #999; /* Neutral grey for the ground */
+        }
+
+        .dino {
+            position: absolute;
+            bottom: 5px;
+            left: 50px;
+            width: 40px;
+            height: 40px;
+            background-color: #555; /* Dark grey for the dino */
+            border-radius: 4px;
+            animation: idle 0.5s steps(2) infinite;
+        }
+
+        @keyframes idle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+        }
+
+        .dino.jump {
+            animation: jump 0.5s ease-out;
+        }
+
+        @keyframes jump {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-100px); }
+            100% { transform: translateY(0); }
+        }
+
+        .cactus {
+            position: absolute;
+            bottom: 5px;
+            right: -20px;
+            width: 20px;
+            height: 40px;
+            background-color: #555; /* Dark grey for cactus */
+            animation: move 2s linear infinite;
+        }
+
+        @keyframes move {
+            from { right: -20px; }
+            to { right: 620px; }
+        }
+
+        .loading-text {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #666; /* Subtle grey for text */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="loading-text">Loading...</div>
+        <div class="dino" id="dino"></div>
+        <div class="cactus"></div>
+        <div class="ground"></div>
+    </div>
+
+    <script>
+        const dino = document.getElementById('dino');
+
+        // Handle Dino Jump
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !dino.classList.contains('jump')) {
+                dino.classList.add('jump');
+                setTimeout(() => dino.classList.remove('jump'), 500);
+            }
+        });
+
+        // Collision Detection
+        const checkCollision = setInterval(() => {
+            const cactus = document.querySelector('.cactus');
+            const cactusRect = cactus.getBoundingClientRect();
+            const dinoRect = dino.getBoundingClientRect();
+
+            if (
+                cactusRect.left < dinoRect.right &&
+                cactusRect.right > dinoRect.left &&
+                cactusRect.bottom > dinoRect.top &&
+                cactusRect.top < dinoRect.bottom
+            ) {
+                alert('Game Over! Reload the page to try again.');
+                clearInterval(checkCollision);
+            }
+        }, 10);
+
+        // Dynamic Loading Message
+        const messages = ["Loading", "Almost ready", "Just a moment..."];
+        let messageIndex = 0;
+        const loadingText = document.querySelector('.loading-text');
+
+        setInterval(() => {
+            loadingText.textContent = messages[messageIndex];
+            messageIndex = (messageIndex + 1) % messages.length;
+        }, 1200);
+    </script>
+</body>
+</html>
