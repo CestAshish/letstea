@@ -103,6 +103,9 @@
         .then(response => response.json())
         .then(data => {
             const topics = data[domain.toLowerCase()][level];
+            const progress_topic = data[domain.toLowerCase()][level][indexToScroll.toString()]['Topic'];
+            console.log(progress_topic);
+            localStorage.setItem('progressTopic', progress_topic);
             populateTopics(topics);
         })
         .catch(error => console.error('Error loading JSON:', error));

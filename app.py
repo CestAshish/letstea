@@ -59,6 +59,18 @@ def profiler():
     return render_template("PROF.html")
 
 
+@app.route('/quiz')
+def quiz():
+    try:
+        questions =[]
+        data = request.form.get('questiondata')
+        data = json.loads(data)
+        topic = data['topicname']
+        history = data['chathistory']
+        questions = question_generator(topic,history)
+        return render_template('quiz.html',ques=questions)
+
+
 @app.route('/proficiency_test', methods=['POST'])
 def proficiency_test():
     try:
