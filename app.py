@@ -7,7 +7,7 @@ from groq import Groq
 
 from firebase import add_user, login_user, add_user_profile_to_firebase, add_progress_to_firebase, \
     get_Data, get_progress
-from worker import essay_topic, chat_bot, proficiency_cal, teach_bot
+from worker import essay_topic, chat_bot, proficiency_cal, teach_bot, question_generator
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -69,6 +69,9 @@ def quiz():
         history = data['chathistory']
         questions = question_generator(topic,history)
         return render_template('quiz.html',ques=questions)
+    except Exception as e:
+        print(f"Error in proficiency_test: {e}")
+        return jsonify({"error": "error occurred"}), 500
 
 
 @app.route('/proficiency_test', methods=['POST'])

@@ -251,7 +251,8 @@ Your task is to evaluate the given questions and answers and return a nested lis
 [[question, answer, score, comments], [question, answer, score, comments], ...]
 The score should be either +1 (for a correct answer) or 0 (for an incorrect answer).
 If the score is +1, the comments should be "correct".
-If the score is 0, the comments should contain a string explaining the mistake in one line and include the correct answer.
+If the score is 0, the comments should contain a string explaining 
+the mistake in one line and include the correct answer.
 Your output should strictly be a Python nested list in the described format.
 """
 ]
@@ -335,9 +336,23 @@ def topic_desc(topic, user_data):
     topic = chat_bot(4, message_history)
     return topic
 
-def question_generator(question,history):
+
+def question_generator(topic, history):
+    message_history = [{
+        "role": "user",
+        "content": f"chat history : {history}, topic : {topic}"
+    }]
+    questions = chat_bot(5, message_history)
+    return questions
 
 
+def evaluation_generator(question_answers):
+    message_history = [{
+        "role": "user",
+        "content": f"question with their respective answers : {question_answers}"
+    }]
+    evaluation = chat_bot(5, message_history)
+    return evaluation
 
 
 def essay_topic(user_data):
