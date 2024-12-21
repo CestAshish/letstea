@@ -6,8 +6,8 @@ from flask import Flask, request, jsonify, redirect, url_for, session, render_te
 from groq import Groq
 
 from firebase import add_user, login_user, add_user_profile_to_firebase, add_progress_to_firebase, \
-    get_Data, get_progress
-from worker import essay_topic, chat_bot, proficiency_cal, teach_bot, question_generator
+    get_Data, get_progress, get_code
+from worker import essay_topic, chat_bot, proficiency_cal, teach_bot, question_generator, evaluation_generator
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -59,19 +59,41 @@ def profiler():
     return render_template("PROF.html")
 
 
-@app.route('/quiz')
+@app.route('/quiz', methods=['POST'])
 def quiz():
     try:
-        questions =[]
         data = request.form.get('questiondata')
+        if data is None:
+            raise ValueError("No data found")
         data = json.loads(data)
-        topic = data['topicname']
-        history = data['chathistory']
-        questions = question_generator(topic,history)
-        return render_template('quiz.html',ques=questions)
+        topic = data.get('topicname')
+        history = data.get('chathistory')
+        if not topic or not history:
+            raise ValueError("Missing topic or history data")
+        questions = question_generator(topic, history)
+        return render_template('quiz.html', ques=questions, history = history)
+
     except Exception as e:
         print(f"Error in proficiency_test: {e}")
-        return jsonify({"error": "error occurred"}), 500
+        # Send a response with an error message if something goes wrong
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/evaluate', methods=['POST'])
+def evaluate():
+    try:
+        answers = request.form.get('answers')
+        if not answers:
+            raise ValueError("No answers data found.")
+        answers = json.loads(answers)
+        evaluation = evaluation_generator(answers)
+        code = get_code(evaluation)
+        print("Answers received:", evaluation)
+        return render_template('evaluation.html', eval=evaluation, code=code)
+
+    except Exception as e:
+        print(f"Error in submitting quiz: {e}")
+        return jsonify({"error": "An error occurred while submitting the quiz."}), 500
 
 
 @app.route('/proficiency_test', methods=['POST'])

@@ -193,6 +193,42 @@
     .input-group button#next-button:active {
         background-color: #FFD6D6;
     }
+
+         .loading-screen {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: auto;
+        height: auto;
+        display: flex;
+        text-align: center;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        padding: 2rem;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #FFB0B0;
+        border-top: 5px solid #FF8888;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+  .loading-text {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        color: #4A4A4A;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+}
+
 </style>
 </head>
 <body>
@@ -200,7 +236,10 @@
 <div class="body">
     <div id="chat-window">
         <div id="message-list">
-            <!-- Messages will be displayed here -->
+             <div id = 'loader' class="loading-screen">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Hold on, the teacher’s grabbing a coffee... Just kidding!</div>
+            </div>
         </div>
     </div>
 </div>
@@ -340,7 +379,7 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
             if (!response.ok) throw new Error("Network response error");
             const data = await response.json();
             messageHistory.push({ role: 'assistant', content: data.message });
-
+            document.getElementById('loader').style.display = 'none';
             displayBotMessage(data.message);
         } catch (error) {
             console.error("Error:", error);
@@ -402,6 +441,37 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
         messageList.scrollTop = messageList.scrollHeight;
     }
 
+// Function to send data via form submission
+function sendQuizData(topicName, chatHistory) {
+    const data = {
+        topicname: topicName,
+        chathistory: chatHistory
+    };
+
+    // Create a new form element
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/quiz';  // The route where the form should be submitted
+
+    // Create hidden input fields for the data
+    const input1 = document.createElement('input');
+    input1.type = 'hidden';
+    input1.name = 'questiondata';
+    input1.value = JSON.stringify(data);  // Send the data as a JSON string
+
+    // Append the input fields to the form
+    form.appendChild(input1);
+
+    // Append the form to the body (it must be in the DOM to submit)
+    document.body.appendChild(form);
+
+    // Submit the form
+    form.submit();
+}
+nextButton.addEventListener('click', function() {
+    sendQuizData(localStorage.getItem('progressTopic'), messageHistory);
+});
+
 window.onload = function () {
 
     // Fetch the topic from localStorage
@@ -437,12 +507,11 @@ window.onload = function () {
 };
 
 window.addEventListener('storage', (event) => {
-
     if (event.key === 'sharedTopic') {
         // Reload the page to execute the HTML and JavaScript again
         if (topic !== localStorage.getItem('sharedTopic')){
         window.location.reload();
-        console.log("ashish is pookie")}
+        }
     }
 });
 

@@ -55,11 +55,22 @@ def get_Data(username, topic):
     user_data = ref.child(username).get()
     persona = user_data["ai_persona"]
     profile = user_data["user_profile"]
+    cefr = user_data["progress"]["cefr"]
     topic_detail = topic_desc(topic, user_data)
     data = {"user profile": profile,
+            "cefr":cefr,
             "ai persona": persona,
             "topic description": topic_detail}
     return data
+
+
+def get_code(evaluation):
+    total_score = 0
+    total_questions = len(evaluation)
+    for item in evaluation:
+        total_score += item[2]
+    score_percentage = total_score / total_questions
+    return 1 if score_percentage >= 0.7 else 0
 
 
 def login_user(username, password):

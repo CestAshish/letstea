@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Font Awesome -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            margin: 0;
+            background-color: #ffb0b0; /* Light pink background for the remaining area */
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        .body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .quiz-container {
+            width: 90%; /* Width set to 90% */
+            margin: 2rem auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #ffb0b0; /* Soft pastel pink color */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            display: flex;
+            flex-direction: column; /* Stacks question number and text */
+            gap: 8px;
+            transition: all 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        .question:hover {
+            font-size: 1.2rem; /* Increase font size on hover */
+            cursor: pointer;
+            color: #ff6347; /* Optional color change on hover */
+        }
+
+        .question p {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .answer-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+ /* Added margin top to ensure spacing between the question and answer box */
+            margin-bottom: 20px; /* Added margin bottom to create space after the answer box */
+            transition: all 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        .answer-area input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ffb0b0; /* Matching pastel pink border */
+            background-color: #fafafa;
+            box-sizing: border-box;
+            transition: all 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        .answer-area input:hover {
+            background-color: #ffb0b0; /* Change background color on hover */
+            transform: scale(1.05); /* Slightly increase the size */
+            cursor: pointer;
+        }
+
+        .answer-area input:focus {
+            border-color: #ffb0b0;
+            outline: none;
+        }
+
+        .submit-btn {
+            background-color: #ffb0b0; /* Soft pastel pink background */
+            border: none;
+            padding: 16px 20px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #ff8e8e; /* Slightly darker pink on hover */
+        }
+
+        .question-number {
+            font-weight: 700;
+            color: #ffb0b0; /* Pastel pink for question number */
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        @media screen and (max-width: 768px) {
+            .quiz-container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Quiz</h2>
+        <div id="quiz-questions"></div>
+        <button class="submit-btn" id="submit-btn">Submit</button>
+    </div>
+
+<script>
+    // Fetch the questions data passed from Flask via Jinja (rendered in HTML)
+    const questionsData = {{ ques | tojson }};
+
+    // Function to populate the questions dynamically
+    function populateQuizQuestions() {
+        const quizQuestionsDiv = document.getElementById("quiz-questions");
+
+        questionsData.forEach((question, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+
+            // Create question number and text in the same line
+            const questionText = document.createElement('p');
+            questionText.classList.add('question-text');
+            questionText.textContent = `Q${index + 1}: ${question}`;
+            questionDiv.appendChild(questionText);
+
+            // Create answer input below the question
+            const answerArea = document.createElement('div');
+            answerArea.classList.add('answer-area');
+
+            const answerInput = document.createElement('input');
+            answerInput.type = 'text';
+            answerInput.placeholder = 'Your answer';
+            answerInput.id = `answer-${index + 1}`; // Unique ID for each input field
+            answerInput.name = `answer_${index + 1}`; // Name for easier identification during form submission
+            answerArea.appendChild(answerInput);
+
+            questionDiv.appendChild(answerArea);
+            quizQuestionsDiv.appendChild(questionDiv);
+        });
+    }
+
+    // Event listener for the submit button
+    document.getElementById("submit-btn").addEventListener("click", function() {
+        const answers = [];
+
+        // Collect answers from each question and store them as a nested array [question, answer]
+        questionsData.forEach((question, index) => {
+            const answerInput = document.getElementById(`answer-${index + 1}`);
+            if (answerInput) {
+                // Push the question and answer as a pair into the answers array
+                answers.push([question, answerInput.value]);
+            }
+        });
+
+        // Now we need to append these answers to a hidden form and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/evaluate'; // The route where the data will be submitted
+
+        // Add answers as hidden input fields
+        const answersInput = document.createElement('input');
+        answersInput.type = 'hidden';
+        answersInput.name = 'answers';  // The name of the data to be sent
+        answersInput.value = JSON.stringify(answers);  // Store the entire array of questions and answers as JSON
+        form.appendChild(answersInput);
+
+        // Append the form to the body, submit it, and remove it after submission
+        document.body.appendChild(form);
+        form.submit();
+    });
+
+    // Load the quiz questions when the page is ready
+    window.onload = function() {
+        populateQuizQuestions();
+    };
+</script>
+
+
+</body>
+</html>

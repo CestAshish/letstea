@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Evaluation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Font Awesome -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffb0b0; /* Light pink background */
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        .body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .quiz-container {
+            width: 90%;
+            margin: 2rem auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #ffb0b0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .question p {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .answer-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .answer-area input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ffb0b0;
+            background-color: #fafafa;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .answer-area input:hover {
+            background-color: #ffb0b0;
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        .answer-area input:focus {
+            border-color: #ffb0b0;
+            outline: none;
+        }
+
+        .score {
+            position: absolute;
+            right: 10px;
+            top: 30%;
+            transform: translateY(-50%); /* Center score vertically */
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center; /* Center horizontally within the answer box */
+        }
+
+        .submit-btn {
+            background-color: #ffb0b0;
+            border: none;
+            padding: 16px 20px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #ff8e8e;
+        }
+
+        .question-number {
+            font-weight: 700;
+            color: #ffb0b0;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        /* Gradient background based on score */
+        .answer-box.correct {
+            background: linear-gradient(90deg, rgba(0, 255, 0, 0.05) 0%, rgba(255, 0, 0, 0.05) 100%);
+        }
+
+        .answer-box.comment {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* Style for the action buttons */
+        .action-btns {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background-color: #ffb0b0;
+            border: none;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            width: 45%;
+        }
+
+        .action-btn:hover {
+            background-color: #ff8e8e;
+        }
+
+        @media screen and (max-width: 768px) {
+            .quiz-container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Quiz</h2>
+        <div id="quiz-questions"></div>
+
+        <!-- Action buttons at the end -->
+        <div class="action-btns">
+            <button id="revise-btn" class="action-btn" style="display:none;">Revise Current Topic</button>
+            <button id="next-btn" class="action-btn" style="display:none;">Go to Next Topic</button>
+        </div>
+    </div>
+
+    <script>
+        // Example evaluation data (this will be dynamically populated from backend)
+        const evaluationData = {{ eval | tojson }}; // This will be passed by backend rendering
+
+        // Function to populate the evaluation dynamically
+        function populateEvaluation() {
+            const quizQuestionsDiv = document.getElementById("quiz-questions");
+
+            evaluationData.forEach((item, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+                // Create question text
+                const questionText = document.createElement('p');
+                questionText.classList.add('question-text');
+                questionText.textContent = `${index + 1}. ${item[0]}`;
+                questionDiv.appendChild(questionText);
+
+                // Create the answer input (pre-filled with the provided answer)
+                const answerArea = document.createElement('div');
+                answerArea.classList.add('answer-area');
+
+                const answerInput = document.createElement('input');
+                answerInput.type = 'text';
+                answerInput.classList.add('answer-box');
+                answerInput.value = item[1];
+
+                // Set the background color based on the score (0 to 1)
+                const score = item[2];
+                const red = Math.floor(255 * (1 - score));
+                const green = Math.floor(255 * score);
+
+                // Now, ensure the background is visible with transparency
+                answerInput.style.background = `rgba(${red}, ${green}, 0, 0.05)`; // Increased transparency for better visibility
+
+                // Display the score on the right side of the answer box
+                const scoreText = document.createElement('span');
+                scoreText.classList.add('score');
+                scoreText.textContent = `${score}/1`;
+
+                // Add the category/comment under the answer box
+                const comment = document.createElement('p');
+                comment.classList.add('answer-box', 'comment');
+                comment.textContent = `Category: ${item[3]}`;
+
+                // Append everything
+                answerArea.appendChild(answerInput);
+                answerArea.appendChild(scoreText);
+                answerArea.appendChild(comment);
+
+                questionDiv.appendChild(answerArea);
+                quizQuestionsDiv.appendChild(questionDiv);
+            });
+
+            // Show the appropriate button based on the 'code' from the backend
+            const code = {{ code }}; // Assuming 'code' is passed from the backend
+            if (code === 0) {
+                document.getElementById('revise-btn').style.display = 'inline-block';
+                document.getElementById('next-btn').style.display = 'none';
+            } else if (code === 1) {
+                document.getElementById('next-btn').style.display = 'inline-block';
+                document.getElementById('revise-btn').style.display = 'none';
+            }
+        }
+
+        // Populate the evaluation data when the page loads
+        window.onload = function() {
+            populateEvaluation();
+        };
+    </script>
+</body>
+</html>

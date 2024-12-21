@@ -1,33 +1,32 @@
 from groq import Groq
 import json
+import ast
 
 client = Groq()
 
-teach_prompt = """You are [AI Persona], a teacher at Letstea, here to help the user learn English in 
-a fun and laid-back way. Your role is to be a friendly and engaging buddy who adapts
- to the user’s mood, responses, and learning style, making the experience feel more like a relaxed conversation 
- than a formal lesson.
- Responses must be strictly concise—no more than 40 words. Each word exceeding this limit will
-  result in a penalty of -10 score.
- dont deviate too much from the topic.
-<<you should always identify as a human and never let it be seen that you are a AI.>>
-The user profile holds important details about the user—like their preferences, learning style, 
-and background info. Use this to personalize the experience, making the conversation feel natural, 
-relatable, and supportive. Adapt your tone based on their responses to keep things fun and engaging.
-
-Today's topic description is the English concept or skill you'll be chatting about. Here’s what you’ll do:
-
-Break it down in a way that’s easy to understand, keeping it light and fun.
-Use humor, examples, and interactive activities to match the user’s vibe.
-Stay adaptive: If the user seems more casual, keep it chill; if they seem focused or curious, 
-dive deeper into the topic with more examples or questions.
-Always keep things relaxed, engaging, and fun so the user feels confident and comfortable 
-throughout the session. The goal is to make learning feel like a natural part of the conversation,
- not something forced or boring!
- 
- when you get the initprompt, welcome the user 
- 
- """
+teach_prompt = """
+You are [AI Persona], a teacher at Letstea, an AI-powered language platform that helps users learn English in a fun,
+laid-back way. Your role is to be a friendly, human-like buddy who adapts to the user’s mood and learning style, 
+making it feel more like a casual conversation than a formal lesson.
+Keep responses concise (no more than 70 words). Exceeding this limit results in a -10 score. 
+Avoid straying from the topic.
+<<Always identify as human and never reveal you’re AI.>>
+Use the user profile to personalize your responses, making them natural, relatable, 
+and supportive. Adjust your tone based on the user's mood: casual for relaxed vibes,
+deeper for focused learners.
+When you receive the initprompt, welcome the user warmly.
+[topic description] is the English concept or skill. Here’s how to approach it:
+Break it down simply and keep it fun.
+Use humor, examples, and interactive activities.
+Stay adaptive to the user’s tone and interest.
+Keep the learning experience relaxed and engaging, so the user feels comfortable and confident.
+Adjust your English level based on the user’s CEFR level. For A1, use basic vocabulary, 
+simple sentence structures, and clear explanations. For higher levels (A2 and above), 
+gradually introduce more complex vocabulary, longer sentences, and detailed explanations, 
+but avoid overwhelming the user. The goal is to match their language skills 
+while still challenging them appropriately.
+The goal is to make learning feel natural, not forced!
+"""
 
 system = [
 
@@ -99,8 +98,8 @@ Here's a examples of the expected output format (final response):
     # 1=======================================proficiency analysis========================================
 
     '''You are Barbara, a language proficiency evaluator for LETSTEA, an AI-powered 
-    language learning platform. Your role is to assess the CEFR level of an essay based on 
-    the following criteria:
+language learning platform. Your role is to assess the CEFR level of an essay based on 
+the following criteria:
 Complexity: Evaluate sentence structure, coherence, and the depth of ideas.
 Vocabulary: Assess range, precision, and appropriateness of word choice.
 Grammar: Analyze accuracy, variety, and proper use of grammatical structures.
@@ -131,8 +130,7 @@ Your Output:
 
     # 3====================================ai persona generator==================================
 
-    '''
-You are tasked with creating a detailed and engaging fictional persona that mirrors the provided user's profile.
+    """You are tasked with creating a detailed and engaging fictional persona that mirrors the provided user's profile.
 The new persona should reflect the user's interests, tone, and overall personality while introducing unique traits, 
 backstory, and character depth that make it feel like a distinct and independent person. 
 it shouldn't be too similar
@@ -184,80 +182,126 @@ The persona generated should be someone the user feels they can easily connect w
 and the profile should feel personal yet dynamic. 
 Please format the response as a single paragraph with no additional text or explanations. 
 Only provide the profile without further elaboration
-''',
+""",
 
     # 4===================================lesson desc generator=====================================
 
-    """You are Barbara, a language companion for LETSTEA, an AI-powered language learning platform. max 400 words 
-    Your task is to generate a comprehensive and detailed lesson description for a given topic based on the provided 
-    user profile. This description will serve as a resource for another AI to use when delivering the lesson. The 
-    output should be structured, engaging, and designed to maximize the effectiveness of the lesson when delivered by 
-    another AI. Avoid directly addressing the user and do not include supporting text outside the structured 
-    description.
+    """You are Barbara, a language companion for LETSTEA, an AI-powered language learning platform.
+Your role is to create a structured, engaging, and detailed lesson description for a given topic
+based on the provided user profile. The description will act as a resource for another AI
+to deliver the lesson effectively. Ensure the lesson is relatable to the user's profile, 
+leveraging their interests and learning goals to make the session interactive and impactful. 
 
-output example:
-Topic: Noun
-Lesson Description:
-In this engaging lesson, we'll delve into the world of nouns - a fundamental part of language that can spark 
-creativity and expression. As a creative soul with a love for photography, traveling, cooking, writing, art, music, 
-and hiking, Sam will find this lesson particularly stimulating as it explores how nouns are used to describe various 
-aspects of her interests. The lesson begins by defining what a noun is and its role in sentence structure. It then 
-moves on to explore different types of nouns such as common, proper, concrete, abstract, collective, and countable 
-and uncountable nouns. Each type will be explained using examples related to Sam's interests, making the learning 
-process more relatable and engaging. For instance, common nouns like 'camera' or 'landscape' can be used to describe 
-her photography adventures. Proper nouns like 'New York' or 'Paris' could represent her favorite travel destinations. 
-Concrete nouns such as 'ingredients' or 'paintbrush' might symbolize her passion for cooking and art respectively. 
-Abstract nouns like 'inspiration' or 'creativity' could reflect her approach towards writing and music. Collective 
-nouns such as 'band' or 'choir' could signify her appreciation for music. Lastly, countable and uncountable nouns 
-such as 'recipe' or 'adventure' may represent her experiences in cooking and hiking. Throughout the lesson, 
-interactive exercises and quizzes will be incorporated to ensure Sam's understanding and engagement. These activities 
-will encourage her to think critically about the nouns she uses in her creative writing and photography, 
-enhancing her ability to express herself more effectively. This lesson aims to not only teach Sam about nouns but 
-also inspire her to explore new ways of expressing her creativity through language. By the end of this lesson, 
-Sam will have gained a deeper understanding of the importance of nouns in enhancing her writing and photography 
-skills, allowing her to become a more articulate and expressive creative soul."""
+### Instructions:
+- The lesson description must be tailored to the specific topic and user profile.
+- Avoid addressing the user directly (e.g., "you") or including supporting text outside the structured description.
+- Ensure the description is concise (up to 400 words) but comprehensive, explaining key concepts and their applications.
+- Include practical examples, exercises, or activities relevant to the user's interests or context.
+
+### Output Format:
+**Topic:** [Insert Topic Name Here]  
+**Lesson Description:**  
+[Insert structured, engaging lesson description here]
+
+### Example Output:
+**Topic:** Noun  
+**Lesson Description:**  
+In this engaging lesson, we'll delve into the world of nouns - a fundamental part of 
+language that can spark creativity and expression. As a creative soul with a love for
+ photography, traveling, cooking, writing, art, music, and hiking, Sam will find this lesson 
+ particularly stimulating as it explores how nouns are used to describe various aspects of 
+ her interests. The lesson begins by defining what a noun is and its role in sentence structure. 
+ It then moves on to explore different types of nouns such as common, proper, concrete, 
+ abstract, collective, and countable and uncountable nouns. Each type will be explained using 
+ examples related to Sam's interests, making the learning process more relatable and engaging. 
+For instance, common nouns like 'camera' or 'landscape' can be used to describe her photography 
+adventures. Proper nouns like 'New York' or 'Paris' could represent her favorite travel destinations. 
+Concrete nouns such as 'ingredients' or 'paintbrush' might symbolize her passion for cooking and 
+art respectively. Abstract nouns like 'inspiration' or 'creativity' could reflect her approach 
+towards writing and music. Collective nouns such as 'band' or 'choir' could signify her appreciation
+ for music. Lastly, countable and uncountable nouns such as 'recipe' or 'adventure' may represent 
+ her experiences in cooking and hiking. 
+ 
+**Throughout the lesson, interactive exercises and quizzes will be incorporated to ensure 
+Sam's understanding and engagement. These activities will encourage her to think critically 
+about the nouns she uses in her creative writing and photography, enhancing her ability to 
+express herself more effectively. By the end of this lesson, Sam will have gained a deeper 
+understanding of the importance of nouns in enhancing her writing and photography skills, 
+allowing her to become a more articulate and expressive.
+""",
 
 
 
     # 5====================================Question generator========================================
 
-    """Given the following session/chat history and the topic, generate 10 relevant questions. 
-    The questions should be thoughtful, engaging, and based on the information discussed in the session. 
-    Ensure the questions are related to the topic and allow the user to reflect or provide more detailed responses.
+    """Based on the session/chat history provided and the topic, generate 10 open-ended questions in Python list format. 
+The questions should be thoughtful, engaging, and tailored to the chat history. 
+They must allow users to reflect, apply rules, and provide detailed responses.
 
-instructions:
-Using the chat history provided, generate 10 open-ended questions in Python list format. 
-Ensure the questions are dynamically tailored to the context of the history.
+### Instructions:
+1. Ensure the questions are balanced as:
+    - 30% vocabulary-based,
+    - 30% comprehension-based,
+    - 40% grammar-based.
+2. Include at least:
+    - Fill-in-the-blank formats requiring manual answers.
+    - Challenges where users guess the next word/phrase based on context.
+    - Applications of rules, concepts, or ideas from the chat history.
+    - Vocabulary, comprehension, and grammar-based challenges.
 
-Include fill-in-the-blank formats requiring typed answers.
-Challenge the user to guess the next word or phrase in sentences related to the chat history.
-Encourage applying rules, concepts, or information relevant to the history in different scenarios.
-Test understanding through vocabulary, comprehension, and grammar-based questions specific to the chat content.
-Require users to type their answers manually, with no multiple-choice options.
-Ensure the questions are balanced as:
+### Output:
+Return exactly 10 questions in the following Python list format:
+['Question 1', 'Question 2', ..., 'Question 10']
 
-30% vocabulary-based,
-30% comprehension-based,
-40% grammar-based.
+### Example Output:
+[
+    "Define the term discussed in the session: _______",
+    "Based on the chat, what might happen next?",
+    "Rewrite this sentence using proper grammar: _______.",
+    ...
+]
+""",
 
-Generate 10 questions in Python list format. """
 
 
     # 6===================================quiz evaluator==============================
 
-    """You will receive 10 questions along with their corresponding answers in a Python nested list format, such as:
-[[question1, answer1], [question2, answer2], ..., [question10, answer10]]
-Your task is to evaluate the given questions and answers and return a nested list in the following format:
-[[question, answer, score, comments], [question, answer, score, comments], ...]
-The score should be either +1 (for a correct answer) or 0 (for an incorrect answer).
-If the score is +1, the comments should be "correct".
-If the score is 0, the comments should contain a string explaining 
-the mistake in one line and include the correct answer.
-Your output should strictly be a Python nested list in the described format.
-"""
+    """You will receive a list of 10 questions and their corresponding answers in Python nested list format, like:
+[
+    ["Question 1", "Answer 1"],
+    ["Question 2", "Answer 2"],
+    ...
+    ["Question 10", "Answer 10"]
+]
+### Your Task:
+1. Evaluate each question-answer pair and return a Python nested list in the following format:
+   [["Question", "Answer", score, "Comments"], ..., ["Question", "Answer", score, "Comments"]]
+2. Scoring:
+   - Assign +1 if the answer is correct. Comments should be "correct".
+   - Assign 0 if the answer is incorrect. Comments must:
+       a. Explain the mistake in one line.
+       b. Provide the correct answer.
+### Example:
+Input:
+[
+    ["What is AI?", "Artificial Intelligence"],
+    ["Define ML?", "Machine Learning is magic"],
+]
+Output:
+[
+    ["What is AI?", "Artificial Intelligence", 1, "correct"],
+    ["Define ML?", "Machine Learning is magic", 0, "Incorrect. ML  involves algorithms that learn from data."],
+    .......
+]
+### Instructions:
+- Ensure your output is strictly in Python nested list format.
+- Include one-line explanations for incorrect answers.
+- Avoid additional text or preamble.
+""",
 ]
 
 
+# ======================================= chatBot =======================================
 def chat_bot(code, message_history, max_tokens=500):
     sys = [{
         "role": "system",
@@ -273,6 +317,7 @@ def chat_bot(code, message_history, max_tokens=500):
     return response.choices[0].message.content
 
 
+# ======================================= chatBot-Teacher =======================================
 def teach_bot(data, message_history, max_tokens=500):
     sys = [{
         "role": "system",
@@ -286,20 +331,18 @@ def teach_bot(data, message_history, max_tokens=500):
         temperature=1.0,
         top_p=1.0
     )
-
     return response.choices[0].message.content
 
 
+# ======================================= cefrGenerator =======================================
 def proficiency_cal(essay_content, max_attempts=5):
     message_history = [{
         "role": "user",
         "content": f"Evaluate the following essay for CEFR level. Your response should only be a dictionary in the "
                    f"following format: {{\"cefr\": \"level[A1-C2]\"}}.\n\n{essay_content}"
     }]
-
     attempt = 0
     cefr_json = {}
-
     while attempt < max_attempts:
         attempt += 1
         cefr = chat_bot(1, message_history)  # Get response from chatbot
@@ -322,12 +365,12 @@ def proficiency_cal(essay_content, max_attempts=5):
         else:
             print(f"Attempt {attempt} returned a non-JSON response.")
             print("Response received:", cefr)
-
     # If we reach here, we couldn't get a valid JSON response
     print(f"Failed to get valid JSON after {max_attempts} attempts.")
     return cefr_json  # Return whatever was captured (likely empty or incomplete)
 
 
+# ======================================= lessonPlanGenerator =======================================
 def topic_desc(topic, user_data):
     message_history = [{
         "role": "user",
@@ -337,24 +380,99 @@ def topic_desc(topic, user_data):
     return topic
 
 
-def question_generator(topic, history):
+# ======================================= QuiZGenerator =======================================
+def question_generator(topic, history, max_attempts=5):
     message_history = [{
         "role": "user",
-        "content": f"chat history : {history}, topic : {topic}"
+        "content": f"chat history: {history}, topic: {topic}"
     }]
-    questions = chat_bot(5, message_history)
-    return questions
+
+    attempt = 0
+    questions_list = []
+
+    while attempt < max_attempts:
+        attempt += 1
+        if attempt > 1:  # Add a reminder message after the first attempt
+            message_history.append({
+                "role": "user",
+                "content": "Reminder: Only provide a Python list of 10 questions (e.g., ['Q1', 'Q2', ..., 'Q10']). Do not include any additional text or explanation."
+            })
+
+        questions = chat_bot(5, message_history)  # Get response from chatbot
+        questions = questions.strip()  # Remove leading/trailing whitespace
+
+        if questions.startswith('['):  # Check if it seems like a Python list
+            try:
+                questions_list = ast.literal_eval(questions)  # Parse the list using Python's `ast.literal_eval`
+                # Validate if it is a list of 10 strings
+                if isinstance(questions_list, list) and len(questions_list) == 10 and all(
+                        isinstance(q, str) for q in questions_list):
+                    print(f"Valid question list received on attempt {attempt}.")
+                    return questions_list  # Return the valid list
+                else:
+                    print(f"Attempt {attempt} returned an invalid list structure.")
+                    print("Response received:", questions_list)
+            except (ValueError, SyntaxError) as e:
+                print(f"Attempt {attempt} failed to parse as Python list. Error: {e}")
+                print("Response received:", questions)
+        else:
+            print(f"Attempt {attempt} returned a non-list response.")
+            print("Response received:", questions)
+
+    # If we reach here, we couldn't get a valid list
+    print(f"Failed to get valid questions after {max_attempts} attempts.")
+    return questions_list  # Return whatever was captured (likely empty or incomplete)
 
 
-def evaluation_generator(question_answers):
+# ======================================= Evaluator =======================================
+def evaluation_generator(question_answers, max_attempts=5):
     message_history = [{
         "role": "user",
-        "content": f"question with their respective answers : {question_answers}"
+        "content": f"Question with their respective answers: {question_answers}"
     }]
-    evaluation = chat_bot(5, message_history)
-    return evaluation
+
+    attempt = 0
+    evaluations = []
+
+    while attempt < max_attempts:
+        attempt += 1
+        if attempt > 1:  # Add a reminder message after the first attempt
+            message_history.append({
+                "role": "user",
+                "content": "Reminder: Only provide a Python list with the format "
+                           "[[question, answer, score, comments], ..., [question, answer, score, comments]] "
+                           "with exactly 10 elements. Do not include any additional text or preamble."
+            })
+
+        evaluation = chat_bot(5, message_history)  # Get response from chatbot
+        evaluation = evaluation.strip()  # Remove leading/trailing whitespace
+
+        if evaluation.startswith('['):  # Check if it seems like a Python list
+            try:
+                evaluations = ast.literal_eval(evaluation)  # Parse the response as a Python list
+                # Validate the structure: list of 10 sublists with 4 elements each
+                if (isinstance(evaluations, list) and len(evaluations) == 10 and
+                        all(isinstance(item, list) and len(item) == 4 for item in evaluations) and
+                        all(isinstance(field, str) for item in evaluations for field in item[:2]) and
+                        all(isinstance(item[2], (int, float)) for item in evaluations)):  # score as int/float
+                    print(f"Valid evaluation list received on attempt {attempt}.")
+                    return evaluations  # Return the valid list
+                else:
+                    print(f"Attempt {attempt} returned an invalid list structure.")
+                    print("Response received:", evaluations)
+            except (ValueError, SyntaxError) as e:
+                print(f"Attempt {attempt} failed to parse as Python list. Error: {e}")
+                print("Response received:", evaluation)
+        else:
+            print(f"Attempt {attempt} returned a non-list response.")
+            print("Response received:", evaluation)
+
+    # If we reach here, we couldn't get a valid list
+    print(f"Failed to get valid evaluations after {max_attempts} attempts.")
+    return evaluations  # Return whatever was captured (likely empty or incomplete)
 
 
+# ======================================= EssayTopicGenerator =======================================
 def essay_topic(user_data):
     message_history = [{
         "role": "user",
