@@ -13,33 +13,35 @@
             flex-direction: column;
             height: 100vh;
             margin: 0;
-            background-color: #ffb0b0; /* Light pink background */
-            font-family: 'Arial', sans-serif;
-            color: #333;
-        }
-
-        .body {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
+            background-color: #FFB0B0; /* Pastel pink background */
+            color: #4A4A4A; /* Darker grey text for contrast */
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace; /* Typewriter font */
         }
 
         .quiz-container {
-            width: 90%;
-            margin: 2rem auto;
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        padding-top:2rem;
+            flex-grow: 1; /* Allow it to grow to fill available space */
+            max-height: 80vh; /* Set a max height */
+            overflow-y: auto; /* Allow vertical scrolling */
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            justify-content: flex-start;
+            width: 85%;
+            margin: auto;
+            scrollbar-width: none; /* For Firefox */
+            background-color: #FFE6E6; /* Slightly lighter pastel pink for chat window */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
 
+         .quiz-container::-webkit-scrollbar {
+        display: none; /* For Chrome/Safari */
+    }
+
         h2 {
-            font-size: 2rem;
-            color: #ffb0b0;
+            font-size: 5vh;
+            color: black; /* Soft pastel pink color */
             text-align: center;
             margin-bottom: 20px;
         }
@@ -48,6 +50,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            padding: 0 2rem;
         }
 
         .question p {
@@ -72,7 +75,6 @@
             background-color: #fafafa;
             box-sizing: border-box;
             transition: all 0.3s ease;
-            display: inline-block;
         }
 
         .answer-area input:hover {
@@ -82,7 +84,6 @@
         }
 
         .answer-area input:focus {
-            border-color: #ffb0b0;
             outline: none;
         }
 
@@ -90,73 +91,54 @@
             position: absolute;
             right: 10px;
             top: 30%;
-            transform: translateY(-50%); /* Center score vertically */
+            transform: translateY(-50%);
             font-size: 1rem;
             font-weight: 600;
-            color: #333;
-            text-align: center; /* Center horizontally within the answer box */
+            color: #4A4A4A;
         }
 
-        .submit-btn {
-            background-color: #ffb0b0;
-            border: none;
-            padding: 16px 20px;
-            font-size: 1.2rem;
-            color: white;
-            cursor: pointer;
-            margin-top: 20px;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
+        /* Comment area styling */
+        .comment {
+            font-size: 0.8rem; /* Smaller font size for comments */
+            color: #555; /* Slightly lighter color for comments */
+            margin-top: 5px;
+            font-style: italic; /* Italic style for comments */
         }
 
-        .submit-btn:hover {
-            background-color: #ff8e8e;
-        }
-
-        .question-number {
-            font-weight: 700;
-            color: #ffb0b0;
-        }
-
-        .question-text {
-            font-size: 1.1rem;
-            line-height: 1.4;
-            color: #333;
-        }
-
-        /* Gradient background based on score */
-        .answer-box.correct {
-            background: linear-gradient(90deg, rgba(0, 255, 0, 0.05) 0%, rgba(255, 0, 0, 0.05) 100%);
-        }
-
-        .answer-box.comment {
-            font-size: 0.8rem;
-            color: #888;
-        }
-
-        /* Style for the action buttons */
-        .action-btns {
+        /* Input Group Styling */
+        .input-group {
+            height: 7vh; /* Fixed height for the input group */
             display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
+            justify-content: center;
+            align-items: center; /* Align input and button vertically */
+            width: 100%;
+            padding: 0 1rem; /* Add padding */
+            margin: auto;
+            gap: 10px; /* Space between input and button */
+            box-sizing: border-box; /* Include padding in element size */
         }
 
-        .action-btn {
-            background-color: #ffb0b0;
+        /* Button Styling */
+        .input-group button {
+            font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+            background-color: #FFFFFF;
+            color: #000000;
             border: none;
-            padding: 16px 20px;
-            font-size: 1.1rem;
-            color: white;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-            width: 45%;
+            padding: 0.5rem;
+            padding-left: 1.5rem;
+            border-radius: 30px;
+            width: 80%;
+            margin-right: 0.5rem;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+            outline: none; /* Disable the black border */
         }
 
-        .action-btn:hover {
-            background-color: #ff8e8e;
+        .input-group button:hover {
+            background-color: #ff8e8e; /* Slightly darker pink on hover */
+            transform: scale(1.02); /* Slightly increase the size */
         }
 
+        /* Media Query for Responsiveness */
         @media screen and (max-width: 768px) {
             .quiz-container {
                 width: 95%;
@@ -171,21 +153,16 @@
 </head>
 <body>
     <div class="quiz-container">
-        <h2>Quiz</h2>
         <div id="quiz-questions"></div>
-
-        <!-- Action buttons at the end -->
-        <div class="action-btns">
-            <button id="revise-btn" class="action-btn" style="display:none;">Revise Current Topic</button>
-            <button id="next-btn" class="action-btn" style="display:none;">Go to Next Topic</button>
-        </div>
+    </div>
+    <div class="input-group">
+        <button style="display:none;" id="revise-btn">Revise Current Topic</button>
+        <button style="display:none;" id="next-btn">Go to Next Topic</button>
     </div>
 
     <script>
-        // Example evaluation data (this will be dynamically populated from backend)
-        const evaluationData = {{ eval | tojson }}; // This will be passed by backend rendering
+        const evaluationData = {{ eval | tojson }}; // Assuming eval is a JSON array passed from your server
 
-        // Function to populate the evaluation dynamically
         function populateEvaluation() {
             const quizQuestionsDiv = document.getElementById("quiz-questions");
 
@@ -193,60 +170,54 @@
                 const questionDiv = document.createElement('div');
                 questionDiv.classList.add('question');
 
-                // Create question text
                 const questionText = document.createElement('p');
-                questionText.classList.add('question-text');
                 questionText.textContent = `${index + 1}. ${item[0]}`;
                 questionDiv.appendChild(questionText);
 
-                // Create the answer input (pre-filled with the provided answer)
                 const answerArea = document.createElement('div');
                 answerArea.classList.add('answer-area');
 
                 const answerInput = document.createElement('input');
+                answerInput.readOnly = true;
                 answerInput.type = 'text';
-                answerInput.classList.add('answer-box');
                 answerInput.value = item[1];
 
-                // Set the background color based on the score (0 to 1)
+                // Dynamically change the border color based on the score
                 const score = item[2];
-                const red = Math.floor(255 * (1 - score));
-                const green = Math.floor(255 * score);
+                if (score <= 0.3) {
+                    answerInput.style.borderColor = 'red';
+                } else if (score <= 0.5) {
+                    answerInput.style.borderColor = 'orange';
+                } else if (score <= 0.7) {
+                    answerInput.style.borderColor = 'lightgreen';
+                } else {
+                    answerInput.style.borderColor = 'green';
+                }
 
-                // Now, ensure the background is visible with transparency
-                answerInput.style.background = `rgba(${red}, ${green}, 0, 0.05)`; // Increased transparency for better visibility
-
-                // Display the score on the right side of the answer box
                 const scoreText = document.createElement('span');
                 scoreText.classList.add('score');
                 scoreText.textContent = `${score}/1`;
 
-                // Add the category/comment under the answer box
-                const comment = document.createElement('p');
-                comment.classList.add('answer-box', 'comment');
-                comment.textContent = `Category: ${item[3]}`;
+                // Add comment under answer (not in input)
+                const commentText = document.createElement('div');
+                commentText.classList.add('comment');
+                commentText.textContent = item[3] || 'No comment provided'; // If no comment, display default message
 
-                // Append everything
                 answerArea.appendChild(answerInput);
                 answerArea.appendChild(scoreText);
-                answerArea.appendChild(comment);
-
+                answerArea.appendChild(commentText); // Append the comment text
                 questionDiv.appendChild(answerArea);
                 quizQuestionsDiv.appendChild(questionDiv);
             });
 
-            // Show the appropriate button based on the 'code' from the backend
-            const code = {{ code }}; // Assuming 'code' is passed from the backend
+            const code = {{ code }};
             if (code === 0) {
                 document.getElementById('revise-btn').style.display = 'inline-block';
-                document.getElementById('next-btn').style.display = 'none';
             } else if (code === 1) {
                 document.getElementById('next-btn').style.display = 'inline-block';
-                document.getElementById('revise-btn').style.display = 'none';
             }
         }
 
-        // Populate the evaluation data when the page loads
         window.onload = function() {
             populateEvaluation();
         };

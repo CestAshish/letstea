@@ -2,7 +2,7 @@ from groq import Groq
 import json
 import ast
 
-client = Groq()
+client = Groq(api_key='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')
 
 teach_prompt = """
 You are [AI Persona], a teacher at Letstea, an AI-powered language platform that helps users learn English in a fun,
@@ -230,74 +230,88 @@ understanding of the importance of nouns in enhancing her writing and photograph
 allowing her to become a more articulate and expressive.
 """,
 
-
-
     # 5====================================Question generator========================================
 
-    """Based on the session/chat history provided and the topic, generate 10 open-ended questions in Python list format. 
-The questions should be thoughtful, engaging, and tailored to the chat history. 
-They must allow users to reflect, apply rules, and provide detailed responses.
+    """
+    Based on the session/chat history provided and the topic, generate 10 open-ended questions in Python list format. 
+    The questions should be thoughtful, engaging, and tailored to the chat history. 
+    They must allow users to reflect, apply rules, and provide detailed responses.
 
-### Instructions:
-1. Ensure the questions are balanced as:
-    - 30% vocabulary-based,
-    - 30% comprehension-based,
-    - 40% grammar-based.
-2. Include at least:
-    - Fill-in-the-blank formats requiring manual answers.
-    - Challenges where users guess the next word/phrase based on context.
-    - Applications of rules, concepts, or ideas from the chat history.
-    - Vocabulary, comprehension, and grammar-based challenges.
+    Instructions:
+    1. Questions should be balanced as:
+        - 30% vocabulary-based (focus on defining terms, synonyms/antonyms, and contextual usage).
+        - 30% comprehension-based (focus on understanding ideas, predicting outcomes, and interpreting meaning).
+        - 40% grammar-based (focus on sentence correction, application of grammar rules, and sentence structure).
+    2. Include at least:
+        - Fill-in-the-blank formats requiring manual answers.
+        - Challenges where users guess the next word/phrase based on context.
+        - Exercises that apply rules, concepts, or ideas discussed in the chat history.
+        - Vocabulary, comprehension, and grammar-based challenges.
+    3. Ensure the questions are interactive, allow for creativity, and focus on reflection or rule application.
+    4. Avoid repetition of question types; make each question unique.
 
-### Output:
-Return exactly 10 questions in the following Python list format:
-['Question 1', 'Question 2', ..., 'Question 10']
+    Output:
+    Return exactly 10 questions in Python list format, ensuring strict adherence to the example structure.
 
-### Example Output:
-[
-    "Define the term discussed in the session: _______",
-    "Based on the chat, what might happen next?",
-    "Rewrite this sentence using proper grammar: _______.",
-    ...
-]
-""",
+    Example Output:
+    [
+        "Define the term mentioned in the session: _______",
+        "What do you think could happen next based on the topic discussed?",
+        "Rewrite the following sentence to correct grammatical errors: _______",
+        "Guess the next word in this sentence: 'The quick brown fox _______'",
+        "Provide a synonym for the term '_' used in the chat.",
+        "Explain the concept of _______ in your own words.",
+        "Fill in the blank: 'The _______ of the idea was clearly expressed.'",
+        "How does the rule of _______ apply to the example provided in the session?",
+        "Analyze the sentence '_' and identify any grammatical mistakes.",
+        "What conclusion can you draw from the discussion on _______?"
+    ]
+    """,
 
+    # 6=================================== quiz evaluator ==============================
 
-
-    # 6===================================quiz evaluator==============================
-
-    """You will receive a list of 10 questions and their corresponding answers in Python nested list format, like:
+    """You will receive a list of 10 questions and their corresponding answers in Python nested list format, such as:
 [
     ["Question 1", "Answer 1"],
     ["Question 2", "Answer 2"],
     ...
     ["Question 10", "Answer 10"]
 ]
-### Your Task:
-1. Evaluate each question-answer pair and return a Python nested list in the following format:
+
+Your Task:
+1. Evaluate each question-answer pair and return a Python nested list in the format:
    [["Question", "Answer", score, "Comments"], ..., ["Question", "Answer", score, "Comments"]]
 2. Scoring:
-   - Assign +1 if the answer is correct. Comments should be "correct".
-   - Assign 0 if the answer is incorrect. Comments must:
-       a. Explain the mistake in one line.
-       b. Provide the correct answer.
-### Example:
+   - The score allocated for each question must be within the range of 0 to 1, inclusive, and no number outside this range should be used.
+   - Assign +1 if the answer is correct, with comments as "correct."
+   - Assign 0 if the answer is incorrect. For incorrect answers:
+       a. Provide the correct answer in the comments (or an ideal response) and briefly explain the mistake in one concise sentence in the comments.
+   - If the answer is empty (""), score it as 0 and include the correct answer in the comment along with a one-line explanation.
+
+3. Ensure the comments for incorrect answers are clear, constructive, and reference relevant concepts or rules where applicable.
+
+Output:
+Return exactly in the required Python nested list format. Example:
+
 Input:
 [
     ["What is AI?", "Artificial Intelligence"],
-    ["Define ML?", "Machine Learning is magic"],
+    ["Define ML?", ""]
 ]
 Output:
 [
     ["What is AI?", "Artificial Intelligence", 1, "correct"],
-    ["Define ML?", "Machine Learning is magic", 0, "Incorrect. ML  involves algorithms that learn from data."],
-    .......
+    ["Define ML?", "", 0, "Incorrect. ML involves algorithms that learn patterns from data."]
 ]
-### Instructions:
-- Ensure your output is strictly in Python nested list format.
+
+Instructions:
+- Maintain precision in evaluation
+- **The score allocated for each question must and should be within the range of 0 to 1,
+ inclusive, and no number outside this range should be used.**
+- Maintain precision in evaluation.
 - Include one-line explanations for incorrect answers.
-- Avoid additional text or preamble.
-""",
+- Avoid additional text or commentary; return only the nested list output.
+"""
 ]
 
 

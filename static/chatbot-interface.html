@@ -236,11 +236,12 @@
 <div class="body">
     <div id="chat-window">
         <div id="message-list">
-             <div id = 'loader' class="loading-screen">
+
+        </div>
+         <div id = 'loader' class="loading-screen">
                 <div class="loading-spinner"></div>
                 <div class="loading-text">Hold on, the teacher’s grabbing a coffee... Just kidding!</div>
             </div>
-        </div>
     </div>
 </div>
 <div class="input-group">
@@ -469,6 +470,15 @@ function sendQuizData(topicName, chatHistory) {
     form.submit();
 }
 nextButton.addEventListener('click', function() {
+        localStorage.setItem('sharedTopic', "QUIZ");
+        window.dispatchEvent(new Event('storage'));
+    // Select the element using its class
+const loadingText = document.querySelector('.loading-text');
+
+// Change the inner HTML content
+    loadingText.innerHTML = "Almost ready! Just a moment...";
+    document.getElementById('loader').style.display = 'flex';
+    document.getElementById('message-list').style.display = 'none';
     sendQuizData(localStorage.getItem('progressTopic'), messageHistory);
 });
 
@@ -510,7 +520,8 @@ window.addEventListener('storage', (event) => {
     if (event.key === 'sharedTopic') {
         // Reload the page to execute the HTML and JavaScript again
         if (topic !== localStorage.getItem('sharedTopic')){
-        window.location.reload();
+        if (localStorage.getItem('sharedTopic') !== "QUIZ"){
+        window.location.reload();}
         }
     }
 });

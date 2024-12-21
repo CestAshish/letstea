@@ -191,7 +191,7 @@ updateDisplay();
 
 // Listen for storage changes
 window.addEventListener('storage', (event) => {
-    if (event.key === 'sharedTopic' || event.key === 'sharedDesc') {
+    if (event.key === 'sharedTopic' ) {
         updateDisplay();
     }
 });
