@@ -1,10 +1,7 @@
 import json
 import os
-
 from flask import Flask, request, jsonify, redirect, url_for, session, render_template
-
 from groq import Groq
-
 from firebase import add_user, login_user, add_user_profile_to_firebase, add_progress_to_firebase, \
     get_Data, get_progress, get_code
 from worker import essay_topic, chat_bot, proficiency_cal, teach_bot, question_generator, evaluation_generator
@@ -13,8 +10,14 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the 'uploads' directory exists
 client = Groq()
-
 app.config['SECRET_KEY'] = os.urandom(24)
+
+@app.after_request
+def add_cache_control(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 
 @app.route('/')
@@ -54,6 +57,11 @@ def learn():
     return render_template("learn.html")
 
 
+@app.route('/learn_next')
+def learn_next():
+    return render_template("learn.html")
+
+
 @app.route('/profiler')
 def profiler():
     return render_template("PROF.html")
@@ -75,7 +83,6 @@ def quiz():
 
     except Exception as e:
         print(f"Error in proficiency_test: {e}")
-        # Send a response with an error message if something goes wrong
         return jsonify({"error": str(e)}), 500
 
 
@@ -86,11 +93,11 @@ def evaluate():
         if not answers:
             raise ValueError("No answers data found.")
         answers = json.loads(answers)
+        user = request.cookies.get('username')
         evaluation = evaluation_generator(answers)
-        code = get_code(evaluation)
+        code = get_code(evaluation, user)
         print("Answers received:", evaluation)
         return render_template('evaluation.html', eval=evaluation, code=code)
-
     except Exception as e:
         print(f"Error in submitting quiz: {e}")
         return jsonify({"error": "An error occurred while submitting the quiz."}), 500
@@ -102,11 +109,7 @@ def proficiency_test():
         user_data = request.form.get('userData')
         user_data = json.loads(user_data)
         topic_response = essay_topic(user_data)
-
-        # Store the topic response in the session
         session['topic'] = topic_response
-
-        # Return a redirection URL without exposing the topic in the URL
         return jsonify({"redirect_url": url_for('proficiency_test_page')})
     except Exception as e:
         print(f"Error in proficiency_test: {e}")
@@ -117,14 +120,9 @@ def proficiency_test():
 def proficiency_test_page():
     try:
         topic = session.get('topic')
-
-        # If the topic is not available, handle the case (redirect or show an error)
         if not topic:
             return jsonify({"error": "Topic not found"}), 404
-
-        # Render the template with the topic
         return render_template('proficiency_test.html', topic=topic)
-
     except Exception as e:
         print(f"Error in proficiency_test_page: {e}")
         return jsonify({"error": "An error occurred while loading the page"}), 500

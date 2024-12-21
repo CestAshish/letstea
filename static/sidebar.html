@@ -171,18 +171,6 @@
     const domain = localStorage.getItem('progressDomain');
     let currentSelectedTopic = null;
 
-    // Fetch and load topics from JSON file
-    fetch('/static/topics.json')
-        .then(response => response.json())
-        .then(data => {
-            const topics = data[domain.toLowerCase()][level];
-            const progress_topic = data[domain.toLowerCase()][level][indexToScroll.toString()]['Topic'];
-            console.log(progress_topic);
-            localStorage.setItem('progressTopic', progress_topic);
-            populateTopics(topics);
-        })
-        .catch(error => console.error('Error loading JSON:', error));
-
     function updateVariable(topicName, topicDesc, index) {
         localStorage.setItem('sharedTopic', topicName);
         localStorage.setItem('sharedDesc', topicDesc);
@@ -277,12 +265,15 @@
     }
 
     window.onload = function () {
+
+
         // Fetch progress data from Flask when the page is loaded
         fetch('/progress')
             .then((response) => response.json())
             .then((data) => {
                 const prog = data;
                 const { domain, cefr, index } = prog;
+                console.log(index);
 
                 // Store progress in localStorage (optional)
                 localStorage.setItem('progressLevel', cefr);
@@ -290,6 +281,20 @@
                 localStorage.setItem('progressDomain', domain);
             })
             .catch((error) => console.error('Error fetching progress data:', error));
+
+
+    // Fetch and load topics from JSON file
+    fetch('/static/topics.json')
+        .then(response => response.json())
+        .then(data => {
+            const topics = data[domain.toLowerCase()][level];
+            const progress_topic = data[domain.toLowerCase()][level][indexToScroll.toString()]['Topic'];
+            console.log(progress_topic);
+            localStorage.setItem('progressTopic', progress_topic);
+            populateTopics(topics);
+        })
+        .catch(error => console.error('Error loading JSON:', error));
+
     };
 </script>
   </body>

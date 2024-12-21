@@ -58,18 +58,45 @@ def get_Data(username, topic):
     cefr = user_data["progress"]["cefr"]
     topic_detail = topic_desc(topic, user_data)
     data = {"user profile": profile,
-            "cefr":cefr,
+            "cefr": cefr,
             "ai persona": persona,
             "topic description": topic_detail}
     return data
 
 
-def get_code(evaluation):
+def get_code(evaluation, username):
     total_score = 0
     total_questions = len(evaluation)
     for item in evaluation:
         total_score += item[2]
     score_percentage = total_score / total_questions
+    ref = db.reference('users')
+    user_progress_ref = ref.child(username).child('progress')
+    user_data = user_progress_ref.get()
+    domain = user_data["domain"]
+    cefr = user_data["cefr"]
+    index = user_data["index"]
+    if score_percentage >= 0.7:
+        index += 1
+    if index > 100:
+        index = 1
+        if cefr == "A1":
+            cefr = "A2"
+        elif cefr == "A2":
+            cefr = "B1"
+        elif cefr == "B1":
+            cefr = "B2"
+        elif cefr == "B2":
+            cefr = "C1"
+        elif cefr == "C1":
+            cefr = "C2"
+        elif cefr == "C2":
+            pass
+    user_progress_ref.update({
+        'domain': domain,
+        'cefr': cefr,
+        'index': index
+    })
     return 1 if score_percentage >= 0.7 else 0
 
 

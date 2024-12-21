@@ -266,7 +266,8 @@
     const userName = sessionStorage.getItem('username');
     let mediaRecorder;
     let audioChunks = [];
-    let messageHistory = []; // Track the message history
+    let messageHistory = []; // Default to an empty array
+
 
     // Set microphone icon
     function setMicIcon() {
@@ -389,6 +390,7 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
         return; // Exit after handling init prompt
     }
 
+
     // Push user message to history
     messageHistory.push({ role: 'user', content: message });
     const userMessage = document.createElement('div');
@@ -472,10 +474,7 @@ function sendQuizData(topicName, chatHistory) {
 nextButton.addEventListener('click', function() {
         localStorage.setItem('sharedTopic', "QUIZ");
         window.dispatchEvent(new Event('storage'));
-    // Select the element using its class
-const loadingText = document.querySelector('.loading-text');
-
-// Change the inner HTML content
+     const loadingText = document.querySelector('.loading-text');
     loadingText.innerHTML = "Almost ready! Just a moment...";
     document.getElementById('loader').style.display = 'flex';
     document.getElementById('message-list').style.display = 'none';
@@ -483,8 +482,6 @@ const loadingText = document.querySelector('.loading-text');
 });
 
 window.onload = function () {
-
-    // Fetch the topic from localStorage
     topic = localStorage.getItem('sharedTopic');
     pregtopic = localStorage.getItem('progressTopic');
     if (topic === pregtopic){
@@ -512,6 +509,7 @@ window.onload = function () {
 
         // Send the init prompt after fetching user data
         sendMessage("initprompt");
+
     })
     .catch((error) => console.error('Error fetching progress data:', error));
 };

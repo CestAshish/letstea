@@ -221,6 +221,20 @@
         window.onload = function() {
             populateEvaluation();
         };
+
+     const reviseBtn = document.getElementById('revise-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    reviseBtn.addEventListener('click', function() {
+    window.parent.location.href = '/learn';
+
+    });
+
+   nextBtn.addEventListener('click', function() {
+        window.parent.location.href = 'templates/learn';
+
+});
+
     </script>
 </body>
 </html>
