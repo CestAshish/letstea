@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, jsonify, redirect, url_for, session, render_template
 from groq import Groq
 from firebase import add_user, login_user, add_user_profile_to_firebase, add_progress_to_firebase, \
-    get_Data, get_progress, get_code, update_history
+    get_Data, get_progress, get_code, update_history, create_history
 from worker import essay_topic, chat_bot, proficiency_cal, teach_bot, question_generator, evaluation_generator
 
 app = Flask(__name__)
@@ -143,6 +143,7 @@ def proficiency_test_cal():
         ce_fr_level_data = proficiency_cal(essay)
         cefr = ce_fr_level_data['cefr']
         add_progress_to_firebase(username, cefr)
+        create_history(username)
         return redirect(url_for('learn'))
     except Exception as e:
         print(f"Error in proficiency_test_cal: {e}")

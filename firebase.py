@@ -161,14 +161,18 @@ def add_progress_to_firebase(username, cefr):
             "cefr": cefr,
             "index": 1,
         }
-        # message_history = {'history':'temp'}
-        # user_history_ref = ref.child(username).child('message_history')
         user_progress_ref = ref.child(username).child('progress')
         user_progress_ref.set(progress)
-        # user_history_ref.set(message_history)
 
     except Exception as e:
         print(f"Error updating cefr for {username}: {str(e)}")
+
+
+def create_history(username):
+    ref = db.reference('users')
+    message_history = {'history': 'temp'}
+    user_history_ref = ref.child(username).child('message_history')
+    user_history_ref.set(message_history)
 
 
 def update_history(username, history):
