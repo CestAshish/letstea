@@ -290,35 +290,6 @@ function updateNavbarColor() {
         navbarRight.style.backgroundColor = isCollapsed ? '#ffb0b0' : '#ffb0b0'; // Adjust colors based on sidebar state
     }
 }
-
-window.onload = function() {
-    const sidebarIframe = document.getElementById('sidebar-iframe');
-    const chatIframe = document.getElementById('chat-iframe');
-
-    // Retrieve topic data from localStorage
-    const topic = localStorage.getItem('sharedTopic');
-    const pregtopic = localStorage.getItem('progressTopic');
-
-    // Check if the topics are the same
-    if (topic !== pregtopic) {
-        // Topics are different, reload the page infinitely
-        console.log("Topics don't match. Reloading page...");
-
-        // Optionally, set the iframe src before reloading
-        sidebarIframe.src = "{{ url_for('static', filename='sidebar.html') }}?v=" + Date.now();
-        chatIframe.src = "{{ url_for('static', filename='chatbot-interface.html') }}?v=" + Date.now();
-
-        // Reload the page after a short delay
-        setTimeout(function() {
-            location.reload(); // Reload the page
-        }, 2000); // Adjust time (in ms) based on your needs
-    } else {
-        // Topics are the same, don't reload
-        console.log("Topics match, no reload.");
-    }
-};
-
-
 </script>
 
 </body>

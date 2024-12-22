@@ -69,6 +69,7 @@ def profiler():
 
 @app.route('/quiz', methods=['POST'])
 def quiz():
+    user = request.cookies.get('username')
     try:
         data = request.form.get('questiondata')
         if data is None:
@@ -78,7 +79,9 @@ def quiz():
         history = data.get('chathistory')
         if not topic or not history:
             raise ValueError("Missing topic or history data")
-        questions = question_generator(topic, history)
+        prog = get_progress(user)
+        cefr = prog['cefr']
+        questions = question_generator(topic, history, cefr)
         return render_template('quiz.html', ques=questions, history = history)
 
     except Exception as e:
@@ -94,7 +97,9 @@ def evaluate():
             raise ValueError("No answers data found.")
         answers = json.loads(answers)
         user = request.cookies.get('username')
-        evaluation = evaluation_generator(answers)
+        prog = get_progress(user)
+        cefr = prog['cefr']
+        evaluation = evaluation_generator(answers, cefr)
         code = get_code(evaluation, user)
         print("Answers received:", evaluation)
         return render_template('evaluation.html', eval=evaluation, code=code)
