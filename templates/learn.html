@@ -2,36 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
+    <link rel="shortcut icon" type="x-icon" href="{{ url_for('static', filename='Studio-Project black.png') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Sidebar Chat</title>
+    <title>LETSTEA</title>
     <style>
         body {
-                                        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        background-color: #ffb0b0;
+        height: 100vh;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        background-color: #f4f5f7;
+        }
 
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    background-color: #ffb0b0;
-    height: 100vh;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background-color: #f4f5f7;
-}
+        body::-webkit-scrollbar {
+        display: none; /* For Chrome/Safari */
+        }
 
-body::-webkit-scrollbar {
-    display: none; /* For Chrome/Safari */
-}
-
-/* Navbar styling */
-.navbar {  font-family: 'Courier New', Courier, monospace; /* Typewriter font */
-
-background-color: #e89d9d;
-    display: flex;
-    height: 8vh;
-    width:100vw;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+        /* Navbar styling */
+        .navbar {  font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        background-color: #e89d9d;
+        display: flex;
+        height: 8vh;
+        width:100vw;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
 .navbar-left {
     min-width: 250px;
