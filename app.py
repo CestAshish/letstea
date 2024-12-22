@@ -153,6 +153,7 @@ def teach():
     data = request.get_json()
     info = data['userData']
     message_history = data['history']
+    print(message_history)
     response = teach_bot(info, message_history)
     return jsonify({
         "status": "message",
