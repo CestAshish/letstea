@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, jsonify, redirect, url_for, session, render_template
 from groq import Groq
 from firebase import add_user, login_user, add_user_profile_to_firebase, add_progress_to_firebase, \
-    get_Data, get_progress, get_code
+    get_Data, get_progress, get_code, update_history
 from worker import essay_topic, chat_bot, proficiency_cal, teach_bot, question_generator, evaluation_generator
 
 app = Flask(__name__)
@@ -49,7 +49,8 @@ def getdata():
     data = request.get_json()
     topic = data.get('topic')
     user = request.cookies.get('username')
-    data = get_Data(user, topic)
+    progtopic = request.cookies.get('progtopic')
+    data = get_Data(user, topic, progtopic)
     return jsonify(data)
 
 
@@ -151,8 +152,16 @@ def proficiency_test_cal():
 @app.route('/teach', methods=['POST'])
 def teach():
     data = request.get_json()
+    tc = data['tempcode']
     info = data['userData']
+    if tc ==1:
+        info["previous session history"] = []
     message_history = data['history']
+    code = data['code']
+    user = request.cookies.get('username')
+    if code == 1:
+        update_history(user, message_history)
+    print(message_history)
     response = teach_bot(info, message_history)
     return jsonify({
         "status": "message",

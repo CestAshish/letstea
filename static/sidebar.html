@@ -271,6 +271,9 @@
                         // Ensure domain, cefr, and index are used after the progress data is fetched
                         const topics = topicsData[domain.toLowerCase()][cefr];
                         const progress_topic = topics[`${index}`]['Topic'];
+                        const expireDate = new Date();
+                        expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
+                        document.cookie = `progtopic=${progress_topic}; expires=${expireDate.toUTCString()}; path=/;`;
                         console.log(progress_topic);
                         localStorage.setItem('progressTopic', progress_topic);  // Optional, if needed
                         populateTopics(topics, index);  // Pass the index to populateTopics

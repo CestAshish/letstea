@@ -257,6 +257,7 @@
 <div class="toast" id="toast">Couldn't understand, please try again.</div>
 
 <script>
+
     const nextButton = document.getElementById('next-button');
     let topic ='';
     const actionButton = document.getElementById('action-button');
@@ -367,6 +368,13 @@
 
 
 async function sendMessage(message) {
+topic = localStorage.getItem('sharedTopic');
+let code = 0;
+pregtopic = localStorage.getItem('progressTopic');
+if (topic === pregtopic){
+code=1;
+}
+
 const userData = JSON.parse(sessionStorage.getItem('userData'));
     if (message === "initprompt") {
         try {
@@ -374,7 +382,7 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
             const response = await fetch('/teach', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ history: messageHistory, userData: userData })
+                body: JSON.stringify({ history: messageHistory, userData: userData, code: code, tempcode : 0 })
 
             });
 
@@ -415,7 +423,7 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
         const response = await fetch('/teach', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ history: messageHistory, userData: userData })
+            body: JSON.stringify({ history: messageHistory, userData: userData, code:code, tempcode : 1 })
         });
 
         if (!response.ok) throw new Error("Network response error");
@@ -482,6 +490,7 @@ nextButton.addEventListener('click', function() {
 });
 
 window.onload = function () {
+
     topic = localStorage.getItem('sharedTopic');
     pregtopic = localStorage.getItem('progressTopic');
     if (topic === pregtopic){
@@ -505,6 +514,9 @@ window.onload = function () {
     .then((data) => {
         // Extract the user data from the response
         const userData = data; // Includes user profile, AI persona, and topic description
+        let code = userData.code
+        console.log(userData)
+
         sessionStorage.setItem('userData', JSON.stringify(userData));
 
         // Send the init prompt after fetching user data

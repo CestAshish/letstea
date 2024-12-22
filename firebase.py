@@ -50,9 +50,15 @@ def get_progress(username):
     return progress
 
 
-def get_Data(username, topic):
+def get_Data(username, topic, progtopic):
+    code = 0
+    if topic == progtopic:
+        code = 1
     ref = db.reference('users')
     user_data = ref.child(username).get()
+    history = user_data['message_history']
+    if code == 0:
+        history = []
     persona = user_data["ai_persona"]
     profile = user_data["user_profile"]
     cefr = user_data["progress"]["cefr"]
@@ -60,11 +66,17 @@ def get_Data(username, topic):
     data = {"user profile": profile,
             "cefr": cefr,
             "ai persona": persona,
-            "topic description": topic_detail}
+            "topic description": topic_detail,
+            "previous session history": history,
+            "code": code
+            }
+    print(topic,progtopic)
     return data
 
 
 def get_code(evaluation, username):
+    print("entered code")
+    print(evaluation)
     total_score = 0
     total_questions = len(evaluation)
     for item in evaluation:
@@ -149,8 +161,17 @@ def add_progress_to_firebase(username, cefr):
             "cefr": cefr,
             "index": 1,
         }
+        # message_history = {'history':'temp'}
+        # user_history_ref = ref.child(username).child('message_history')
         user_progress_ref = ref.child(username).child('progress')
         user_progress_ref.set(progress)
+        # user_history_ref.set(message_history)
 
     except Exception as e:
         print(f"Error updating cefr for {username}: {str(e)}")
+
+
+def update_history(username, history):
+    ref = db.reference('users')
+    user_progress_ref = ref.child(username).child('message_history')
+    user_progress_ref.update({'history':history})
