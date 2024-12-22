@@ -385,7 +385,7 @@ const userData = JSON.parse(sessionStorage.getItem('userData'));
                 body: JSON.stringify({ history: messageHistory, userData: userData, code: code, tempcode : 0 })
 
             });
-
+<!---->
             if (!response.ok) throw new Error("Network response error");
             const data = await response.json();
             messageHistory.push({ role: 'assistant', content: data.message });
