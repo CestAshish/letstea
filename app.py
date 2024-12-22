@@ -161,6 +161,7 @@ def teach():
     user = request.cookies.get('username')
     if code == 1:
         update_history(user, message_history)
+
     print(message_history)
     response = teach_bot(info, message_history)
     return jsonify({
