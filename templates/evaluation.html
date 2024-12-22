@@ -157,11 +157,9 @@
     <div class="quiz-container">
         <div id="quiz-questions"></div>
     </div>
-    <div class="input-group">
-        <button style="display:none;" id="revise-btn">Revise Current Topic</button>
-        <button style="display:none;" id="next-btn">Go to Next Topic</button>
-    </div>
-
+   <div class="input-group">
+    <button id="action-btn" style="display:none;">Action</button>
+</div>
     <script>
         const evaluationData = {{ eval | tojson }}; // Assuming eval is a JSON array passed from your server
 
@@ -212,30 +210,31 @@
                 quizQuestionsDiv.appendChild(questionDiv);
             });
 
-            const code = {{ code }};
-            if (code === 0) {
-                document.getElementById('revise-btn').style.display = 'inline-block';
-            } else if (code === 1) {
-                document.getElementById('next-btn').style.display = 'inline-block';
-            }
+        }
+
+        const code = {{ code }};
+        const actionBtn = document.getElementById('action-btn');
+
+        if (code === 0) {
+            actionBtn.style.display = 'inline-block';
+            actionBtn.textContent = 'Revise Current Topic';
+            actionBtn.onclick = function() {
+                window.parent.location.href = '/learn';
+            };
+        } else if (code === 1) {
+            actionBtn.style.display = 'inline-block';
+            actionBtn.textContent = 'Go to Next Topic';
+            actionBtn.onclick = function() {
+                window.parent.location.href = '/learn';
+            };
         }
 
         window.onload = function() {
             populateEvaluation();
         };
 
-     const reviseBtn = document.getElementById('revise-btn');
-    const nextBtn = document.getElementById('next-btn');
 
-    reviseBtn.addEventListener('click', function() {
-    window.parent.location.href = '/learn';
 
-    });
-
-   nextBtn.addEventListener('click', function() {
-        window.parent.location.href = 'templates/learn';
-
-});
 
     </script>
 </body>

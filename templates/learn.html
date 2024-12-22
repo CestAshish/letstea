@@ -165,10 +165,10 @@ iframe {
     <!-- Main content area for sidebar and chat content -->
 <div class="main-content">
     <div id="sidebar-container" class="sidebar">
-        <iframe id="sidebar-iframe" title="Sidebar Content"></iframe>
+        <iframe id="sidebar-iframe"  src = "{{ url_for('static', filename='sidebar.html') }}" title="Sidebar Content"></iframe>
     </div>
     <div id="chat-container" class="chat-content">
-        <iframe id="chat-iframe" title="Chat Content"></iframe>
+        <iframe id="chat-iframe" src = "{{ url_for('static', filename='chatbot-interface.html') }}" title="Chat Content"></iframe>
     </div>
 </div>
 <script>
@@ -178,11 +178,7 @@ const chatContainer = document.getElementById('chat-container');
 const toggleBtn = document.getElementById('toggle-btn');
 const toggleBtn2 = document.getElementById('toggle-btn-2');
 const messageListHead = document.getElementById('message-list-head');
-const sidebarIframe = document.getElementById('sidebar-iframe');
-    const chatIframe = document.getElementById('chat-iframe');
 
-    sidebarIframe.src = "{{ url_for('static', filename='sidebar.html') }}?v=" + Date.now();
-    chatIframe.src = "{{ url_for('static', filename='chatbot-interface.html') }}?v=" + Date.now();
 
 function updateDisplay() {
     const topic = localStorage.getItem('sharedTopic');
@@ -199,7 +195,6 @@ window.addEventListener('storage', (event) => {
     }
 });
 
-// Also check for updates if the variable was changed in the same tab
 window.addEventListener('load', () => {
     updateDisplay();
 });

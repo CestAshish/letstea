@@ -12,6 +12,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the 'uploads' directory exis
 client = Groq()
 app.config['SECRET_KEY'] = os.urandom(24)
 
+
 @app.after_request
 def add_cache_control(response):
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'
@@ -82,7 +83,7 @@ def quiz():
         prog = get_progress(user)
         cefr = prog['cefr']
         questions = question_generator(topic, history, cefr)
-        return render_template('quiz.html', ques=questions, history = history)
+        return render_template('quiz.html', ques=questions, history=history)
 
     except Exception as e:
         print(f"Error in proficiency_test: {e}")

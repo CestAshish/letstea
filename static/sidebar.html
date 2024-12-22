@@ -166,19 +166,14 @@
     <p id="selected-topic-index" style="display: none;">Index: </p>
 
 <script>
-    const level = localStorage.getItem('progressLevel');
-    const indexToScroll = localStorage.getItem('progressIndex');
-    const domain = localStorage.getItem('progressDomain');
     let currentSelectedTopic = null;
 
-    function updateVariable(topicName, topicDesc, index) {
+    function updateVariable(topicName) {
         localStorage.setItem('sharedTopic', topicName);
-        localStorage.setItem('sharedDesc', topicDesc);
-        localStorage.setItem('sharedIndex', index);
         window.dispatchEvent(new Event('storage'));
     }
 
-    function populateTopics(topics) {
+    function populateTopics(topics, progressIndex) {  // Pass progressIndex explicitly
         const topicList = document.getElementById('topic-list');
         topicList.innerHTML = '';
 
@@ -186,8 +181,6 @@
             topicList.textContent = 'No topics available.';
             return;
         }
-
-        const progressIndex = parseInt(localStorage.getItem('progressIndex'), 10);
 
         Object.entries(topics).forEach(([key, topicData]) => {
             const topicElement = document.createElement('div');
@@ -201,7 +194,6 @@
             } else {
                 topicElement.innerHTML = `${topicData.Topic}`;
                 topicElement.classList.add('locked');
-
             }
 
             topicList.appendChild(topicElement);
@@ -265,37 +257,29 @@
     }
 
     window.onload = function () {
-
-
         // Fetch progress data from Flask when the page is loaded
         fetch('/progress')
             .then((response) => response.json())
             .then((data) => {
-                const prog = data;
-                const { domain, cefr, index } = prog;
-                console.log(index);
+                const { domain, cefr, index } = data; // Use the fresh data directly
+                console.log('Progress data:', domain, cefr, index);
 
-                // Store progress in localStorage (optional)
-                localStorage.setItem('progressLevel', cefr);
-                localStorage.setItem('progressIndex', index);
-                localStorage.setItem('progressDomain', domain);
+                // Now fetch topics using the fresh progress data
+                fetch('/static/topics.json')
+                    .then(response => response.json())
+                    .then(topicsData => {
+                        // Ensure domain, cefr, and index are used after the progress data is fetched
+                        const topics = topicsData[domain.toLowerCase()][cefr];
+                        const progress_topic = topics[`${index}`]['Topic'];
+                        console.log(progress_topic);
+                        localStorage.setItem('progressTopic', progress_topic);  // Optional, if needed
+                        populateTopics(topics, index);  // Pass the index to populateTopics
+                    })
+                    .catch(error => console.error('Error loading JSON:', error));
             })
             .catch((error) => console.error('Error fetching progress data:', error));
-
-
-    // Fetch and load topics from JSON file
-    fetch('/static/topics.json')
-        .then(response => response.json())
-        .then(data => {
-            const topics = data[domain.toLowerCase()][level];
-            const progress_topic = data[domain.toLowerCase()][level][indexToScroll.toString()]['Topic'];
-            console.log(progress_topic);
-            localStorage.setItem('progressTopic', progress_topic);
-            populateTopics(topics);
-        })
-        .catch(error => console.error('Error loading JSON:', error));
-
     };
 </script>
+
   </body>
 </html>
