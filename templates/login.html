@@ -80,6 +80,8 @@ body {
     margin: 1rem 0;
 }
 
+
+
 .input-group i {
     position: absolute;
     top: 50%;
@@ -501,93 +503,176 @@ Welcome!!!
     }
 
     // Handle Sign Up
-    function handleSignup() {
-        const username = document.getElementById('signup-username').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-        const confirmPassword = document.getElementById('signup-confirm-password').value;
+function handleSignup() {
+    const usernameField = document.getElementById('signup-username');
+    const emailField = document.getElementById('signup-email');
+    const passwordField = document.getElementById('signup-password');
+    const confirmPasswordField = document.getElementById('signup-confirm-password');
 
-        if (!username || !email || !password || !confirmPassword) {
-            showToast("All fields are required for signup.");
-            return;
-        }
-        if (password !== confirmPassword) {
-            showToast("Passwords do not match.");
-            return;
-        }
+    const username = usernameField.value.trim();
+    const email = emailField.value.trim();
+    const password = passwordField.value;
+    const confirmPassword = confirmPasswordField.value;
 
-        const data = { username, email, password };
+    let hasError = false;
 
-        fetch('/create_user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === "success") {
-                    const expireDate = new Date();
-                    expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
-                    document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
-                    showToast("Signup successful!");
-                    sessionStorage.setItem('username', username);
-                    handleRedirect(data.flag);
-                } else {
-                    showToast(data.message || "There was an error. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast("An error occurred. Please try again.");
-            });
+    // Clear previous error messages and styles
+    document.querySelectorAll('.input-group').forEach(group => {
+        group.classList.remove('error');
+        group.style.backgroundColor = '';
+        group.querySelector('input').style.border = '';
+    });
+    document.querySelectorAll('.error-message').forEach(msg => msg.remove());
+
+    // Helper function to display error
+    const displayError = (field, message) => {
+        const errorMessage = document.createElement('span');
+        errorMessage.classList.add('error-message');
+        errorMessage.style.color = 'grey';
+        errorMessage.style.fontSize = '12px';
+        errorMessage.style.display = 'block'; // Ensure the message spans the width of the container
+        errorMessage.style.marginTop = '5px';
+        errorMessage.style.textAlign = 'left'; // Align error message to the left
+        errorMessage.textContent = message;
+        field.parentElement.appendChild(errorMessage);
+        field.parentElement.classList.add('error');
+        field.style.border = '2px solid red'; // Add red border to the input field
+        hasError = true;
+    };
+
+    // Validate username
+    if (!username || username.includes(' ') || !/^[a-zA-Z0-9_]+$/.test(username)) {
+        displayError(usernameField, "Username can only contain letters, numbers, or underscores and cannot have spaces.");
     }
+
+    // Validate email format
+    const validEmailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com)$/;
+    if (!email.match(validEmailRegex)) {
+        displayError(emailField, "Enter a valid email (e.g., @gmail.com, @yahoo.com).");
+    }
+
+    // Validate password
+    const validPasswordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/;
+    if (!password.match(validPasswordRegex)) {
+        displayError(passwordField, "Password must be at least 8 characters long, include one uppercase letter, two numbers, and one special character.");
+    }
+
+    // Validate confirm password
+    if (password !== confirmPassword) {
+        displayError(confirmPasswordField, "Passwords do not match.");
+    }
+
+    if (hasError) return;
+
+    const data = { username, email, password };
+
+    fetch('/create_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    })
+        .then(response => {
+            if (!response.ok) {
+
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                const expireDate = new Date();
+                expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
+                document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
+                showToast("Signup successful!");
+                sessionStorage.setItem('username', username);
+                handleRedirect(data.flag);
+            } else {
+                showToast(data.message || "There was an error. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast("An error occurred. Please try again.");
+        });
+}
+
 
     // Handle Login
     function handleLogin() {
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
+    const usernameField = document.getElementById('login-username');
+    const passwordField = document.getElementById('login-password');
 
-        if (!username || !password) {
-            showToast("Username and password are required for login.");
-            return;
-        }
+    const username = usernameField.value.trim();
+    const password = passwordField.value;
 
-        const data = { username, password };
+    let hasError = false;
 
-        fetch('/dologin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-<!--            hi  -->
-            .then(data => {
-                if (data.status === "success") {
-                    const expireDate = new Date();
-                    expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
-                    document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
-                    showToast("Login successful!");
-                    sessionStorage.setItem('username', username);
-                    handleRedirect(data.flag);
-                } else {
-                    showToast(data.message || "There was an error. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast("An error occurred. Please try again.");
-            });
+    // Clear previous error messages and styles
+    document.querySelectorAll('.input-group').forEach(group => {
+        group.classList.remove('error');
+        group.style.backgroundColor = '';
+        group.querySelector('input').style.border = '';
+    });
+    document.querySelectorAll('.error-message').forEach(msg => msg.remove());
+
+    // Helper function to display error
+    const displayError = (field, message) => {
+        const errorMessage = document.createElement('span');
+        errorMessage.classList.add('error-message');
+        errorMessage.style.color = 'grey';
+        errorMessage.style.fontSize = '12px';
+        errorMessage.style.display = 'block'; // Ensure the message spans the width of the container
+        errorMessage.style.marginTop = '5px';
+        errorMessage.style.textAlign = 'left'; // Align error message to the left
+        errorMessage.textContent = message;
+        field.parentElement.appendChild(errorMessage);
+        field.parentElement.classList.add('error');
+        field.style.border = '2px solid red'; // Add red border to the input field
+        hasError = true;
+    };
+
+    // Validate username
+    if (!username || username.includes(' ') || !/^[a-zA-Z0-9_]+$/.test(username)) {
+        displayError(usernameField, "Username can only contain letters, numbers, or underscores and cannot have spaces.");
     }
+
+    // Validate password
+    if (!password || password.length < 8) {
+        displayError(passwordField, "Password must be at least 8 characters long.");
+    }
+
+    if (hasError) return;
+
+    const data = { username, password };
+
+    fetch('/dologin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    })
+        .then(response => {
+            if (!response.ok) {
+
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                const expireDate = new Date();
+                expireDate.setTime(expireDate.getTime() + (60 * 60 * 1000)); // 1 hour in milliseconds
+                document.cookie = `username=${username}; expires=${expireDate.toUTCString()}; path=/;`;
+                showToast("Login successful!");
+                sessionStorage.setItem('username', username);
+                handleRedirect(data.flag);
+            } else {
+                showToast(data.message || "There was an error. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast("An error occurred. Please try again.");
+        });
+}
+
         // Initialize the form state
         setTimeout(() => {
             container.classList.add('sign-in');
